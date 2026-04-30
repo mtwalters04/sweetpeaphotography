@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #1a1716;
+  --bone: #f4efe9;
+  --mist: #e6dfd6;
+  --ash: #7a716a;
+  --accent: #8a6f5a;
+  --shadow: rgba(26, 23, 22, 0.08);
+}
+
+html {
+  background-color: var(--bone);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+::selection {
+  background-color: var(--accent);
+  color: var(--bone);
+}

@@ -50,6 +50,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/journal" className="hover:text-accent transition-colors">
+                Journal
+              </Link>
+            </li>
+            <li>
               <Link href="/about" className="hover:text-accent transition-colors">
                 About
               </Link>

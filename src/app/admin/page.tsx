@@ -1,39 +1,79 @@
-import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import type { Metadata } from 'next';
 import { createClient } from '@/lib/supabase/server';
 
 export const metadata: Metadata = { title: 'Admin' };
 
-// Phase 2 placeholder. Real admin UI lands in Phase 3+.
 export default async function AdminHome() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect('/login?next=/admin');
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role, full_name, email')
-    .eq('id', user.id)
-    .single();
+  const { count: draftCount } = await supabase
+    .from('blog_posts')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'draft');
 
-  if (profile?.role !== 'super_admin' && profile?.role !== 'photographer') {
-    redirect('/account');
-  }
+  const { count: publishedCount } = await supabase
+    .from('blog_posts')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'published');
 
   return (
-    <div className="pt-[clamp(112px,14vw,176px)] pb-[clamp(96px,12vw,192px)] max-w-content mx-auto px-6">
-      <p className="text-ash text-t-12 uppercase tracking-[0.2em] mb-4">Admin</p>
-      <h1 className="font-serif text-t-48 leading-tight">Studio dashboard.</h1>
-      <p className="text-t-18 text-ash mt-6 max-w-prose">
-        Signed in as {profile?.full_name ?? profile?.email} — role:{' '}
-        <span className="text-ink">{profile?.role}</span>.
+    <>
+      <p className="text-t-22 text-ash max-w-prose">
+        The booking pipeline lands in Phase 3. Until then, the Journal is fully usable.
       </p>
-      <p className="text-t-16 text-ash mt-10 max-w-prose">
-        The admin dashboard lands in Phase 3 — booking pipeline, slot publishing, custom request
-        triage. This page exists to confirm the access gate works.
-      </p>
-    </div>
+
+      <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-10">
+        <Card
+          eyebrow="Journal"
+          headline={`${publishedCount ?? 0} published`}
+          subline={`${draftCount ?? 0} drafts in progress`}
+          href="/admin/journal"
+          cta="Open the Journal →"
+        />
+        <Card
+          eyebrow="Bookings"
+          headline="Coming soon"
+          subline="Slot publishing + Stripe checkout — Phase 3."
+        />
+        <Card
+          eyebrow="Custom requests"
+          headline="Coming soon"
+          subline="Triage inbox — Phase 4."
+        />
+      </div>
+    </>
+  );
+}
+
+function Card({
+  eyebrow,
+  headline,
+  subline,
+  href,
+  cta,
+}: {
+  eyebrow: string;
+  headline: string;
+  subline: string;
+  href?: string;
+  cta?: string;
+}) {
+  return (
+    <section>
+      <p className="text-ash text-t-12 uppercase tracking-[0.2em] mb-4">{eyebrow}</p>
+      <div className="border-t border-mist pt-6 min-h-[180px]">
+        <p className="font-serif text-t-28 leading-tight">{headline}</p>
+        <p className="text-t-14 text-ash mt-3">{subline}</p>
+        {href && cta && (
+          <Link
+            href={href}
+            className="inline-block mt-6 text-t-14 underline underline-offset-4 hover:text-accent"
+          >
+            {cta}
+          </Link>
+        )}
+      </div>
+    </section>
   );
 }

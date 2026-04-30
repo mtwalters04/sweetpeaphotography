@@ -39,6 +39,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      blog_posts: {
+        Row: {
+          author_id: string | null
+          body_md: string
+          canonical_url: string | null
+          created_at: string
+          dek: string | null
+          hero_image_alt: string | null
+          hero_image_url: string | null
+          id: string
+          meta_description: string | null
+          meta_title: string | null
+          published_at: string | null
+          related_service_slug: string | null
+          slug: string
+          status: Database["public"]["Enums"]["post_status"]
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          body_md?: string
+          canonical_url?: string | null
+          created_at?: string
+          dek?: string | null
+          hero_image_alt?: string | null
+          hero_image_url?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          related_service_slug?: string | null
+          slug: string
+          status?: Database["public"]["Enums"]["post_status"]
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          body_md?: string
+          canonical_url?: string | null
+          created_at?: string
+          dek?: string | null
+          hero_image_alt?: string | null
+          hero_image_url?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          related_service_slug?: string | null
+          slug?: string
+          status?: Database["public"]["Enums"]["post_status"]
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -80,6 +148,7 @@ export type Database = {
       }
     }
     Enums: {
+      post_status: "draft" | "published" | "archived"
       profile_role: "customer" | "photographer" | "super_admin"
     }
     CompositeTypes: {
@@ -211,6 +280,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      post_status: ["draft", "published", "archived"],
       profile_role: ["customer", "photographer", "super_admin"],
     },
   },

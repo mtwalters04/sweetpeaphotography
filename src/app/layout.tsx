@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Fraunces, Inter } from 'next/font/google';
+import { Nav } from '@/components/nav';
+import { Footer } from '@/components/footer';
 import './globals.css';
 
 const fraunces = Fraunces({
@@ -16,23 +18,21 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Sweet Pea Photography',
+  title: {
+    default: 'Sweet Pea Photography',
+    template: '%s · Sweet Pea Photography',
+  },
   description: 'Portrait and event photography. Heirlooms, in modern light.',
+  metadataBase: new URL('https://sweetpeaphotography.com'),
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
       <body className="bg-bone text-ink">
+        <Nav />
         <main>{children}</main>
-        <footer className="border-t border-mist mt-[clamp(96px,12vw,192px)]">
-          <div className="max-w-content mx-auto px-6 py-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div className="font-serif text-t-22 tracking-tight">Sweet Pea Photography</div>
-            <div className="text-ash text-t-14">
-              © {new Date().getFullYear()} Sweet Pea Photography. All rights reserved.
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </body>
     </html>
   );

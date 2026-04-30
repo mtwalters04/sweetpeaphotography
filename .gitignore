@@ -31,3 +31,4 @@ yarn-error.log*
 
 # typegen
 next-env.d.ts
+*.tsbuildinfo

@@ -1,10 +1,11 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import type { Database } from './database.types';
 import { supabaseEnv, serviceRoleKey } from './env';
 
 export async function createClient() {
   const cookieStore = await cookies();
-  return createServerClient(supabaseEnv.url, supabaseEnv.anonKey, {
+  return createServerClient<Database>(supabaseEnv.url, supabaseEnv.anonKey, {
     cookies: {
       getAll() {
         return cookieStore.getAll();
@@ -23,7 +24,7 @@ export async function createClient() {
 }
 
 export function createAdminClient() {
-  return createServerClient(supabaseEnv.url, serviceRoleKey(), {
+  return createServerClient<Database>(supabaseEnv.url, serviceRoleKey(), {
     cookies: { getAll: () => [], setAll: () => {} },
   });
 }

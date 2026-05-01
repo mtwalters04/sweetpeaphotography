@@ -18,36 +18,48 @@ const formatPrice = (n: number) =>
 export default function Home() {
   return (
     <>
-      {/* HERO — slightly shorter on small screens so work appears sooner while scrolling */}
-      <section className="relative min-h-[88svh] md:h-[100svh] w-full overflow-hidden">
+      {/* HERO — desktop: text panel + right-side image blend for readability */}
+      <section className="relative min-h-[88svh] md:h-[100svh] w-full overflow-hidden bg-bone">
         <Image
           src="/images/hero-home.png"
           alt="Sunrise over a still lake, mountains reflected in the water, a lone figure on the shore"
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="object-cover object-[62%_center] md:object-right"
         />
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-ink/15 via-transparent to-ink/50"
+          className="absolute inset-0 bg-gradient-to-b from-ink/15 via-transparent to-ink/60 md:hidden"
+        />
+        <div
+          aria-hidden
+          className="hidden md:block absolute inset-y-0 left-0 w-[58%] bg-bone"
+        />
+        <div
+          aria-hidden
+          className="hidden md:block absolute inset-y-0 left-[56%] w-[18%] bg-gradient-to-r from-bone via-bone/75 to-transparent"
+        />
+        <div
+          aria-hidden
+          className="hidden md:block absolute inset-x-0 bottom-0 h-[22vh] bg-gradient-to-b from-transparent to-bone"
         />
         <div className="relative z-10 h-full min-h-[88svh] md:min-h-0 max-w-content mx-auto px-6 flex flex-col">
           <div className="flex-1 min-h-[20svh] md:min-h-0" />
-          <div className="pb-[clamp(64px,10vw,160px)]">
-            <p className="text-bone/85 text-t-12 mb-8 font-light eyebrow-label">
+          <div className="pb-[clamp(64px,10vw,160px)] md:max-w-[56%]">
+            <p className="text-bone/85 md:text-ash text-t-12 mb-8 font-light eyebrow-label">
               {STUDIO.name} · est. quietly
             </p>
-            <h1 className="font-serif text-bone text-[clamp(2.75rem,7vw,5.75rem)] leading-[0.98] tracking-[-0.02em] max-w-5xl">
+            <h1 className="font-serif text-bone md:text-ink text-[clamp(2.75rem,7vw,5.75rem)] leading-[0.98] tracking-[-0.02em] max-w-5xl text-wrap-balance">
               Heirlooms,
               <br />
               <span className="italic font-light">in modern light.</span>
             </h1>
-            <p className="text-bone/75 text-t-18 mt-10 max-w-prose font-light leading-relaxed">
+            <p className="text-bone/80 md:text-ash text-t-18 mt-10 max-w-prose font-light leading-relaxed text-wrap-pretty">
               Portrait and event photography for people who want the photographs to outlast the
               party. Booking now for late spring through autumn.
             </p>
-            <div className="mt-12 flex flex-wrap items-center gap-x-12 gap-y-6">
+            <div className="mt-12 flex flex-wrap items-center gap-x-12 gap-y-6 md:hidden">
               <CtaLink href="/book" variant="on-image">
                 See available dates
               </CtaLink>
@@ -55,8 +67,16 @@ export default function Home() {
                 Request a custom date
               </CtaLink>
             </div>
+            <div className="mt-12 hidden md:flex flex-wrap items-center gap-x-12 gap-y-6">
+              <CtaLink href="/book" variant="primary">
+                See available dates
+              </CtaLink>
+              <CtaLink href="/contact" variant="secondary">
+                Request a custom date
+              </CtaLink>
+            </div>
           </div>
-          <div className="pb-6 text-bone/55 text-t-12 eyebrow-label">Scroll</div>
+          <div className="pb-6 text-bone/55 md:text-ash/75 text-t-12 eyebrow-label">Scroll</div>
         </div>
       </section>
 
@@ -65,10 +85,10 @@ export default function Home() {
         <div className="max-w-content mx-auto px-6 mb-16 md:mb-20 grid grid-cols-12 gap-6 items-end">
           <div className="col-span-12 lg:col-span-8">
             <SectionEyebrow number="01" label="Recent work" />
-            <h2 className="font-serif text-[clamp(2rem,4.5vw,3.5rem)] leading-[1.05] tracking-[-0.015em] mt-8 max-w-3xl">
+            <h2 className="font-serif text-[clamp(2rem,4.5vw,3.5rem)] leading-[1.05] tracking-[-0.015em] mt-8 max-w-3xl text-wrap-balance">
               The work up front — <span className="italic font-light">then the calendar.</span>
             </h2>
-            <p className="text-t-16 text-ash mt-6 max-w-prose font-light leading-relaxed">
+            <p className="text-t-16 text-ash mt-6 max-w-prose font-light leading-relaxed text-wrap-pretty">
               Browse collections as you would a wall in the studio. When the fit feels right, we
               hold the date with a deposit.
             </p>

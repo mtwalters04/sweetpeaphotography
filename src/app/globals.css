@@ -31,6 +31,14 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 400;
 }
 
+.text-wrap-balance {
+  text-wrap: balance;
+}
+
+.text-wrap-pretty {
+  text-wrap: pretty;
+}
+
 /* DESIGN_SYSTEM: eyebrow labels in small caps, not shouty all-caps */
 .eyebrow-label {
   font-variant-caps: all-small-caps;

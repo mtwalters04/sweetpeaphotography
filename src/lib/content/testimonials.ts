@@ -1,10 +1,13 @@
+import { createClient } from '@/lib/supabase/server';
+
 export type Testimonial = {
   quote: string;
   attribution: string;
   context: string;
 };
 
-export const TESTIMONIALS: readonly Testimonial[] = [
+// Fallback used when the DB has no approved testimonials yet (or is unreachable).
+const FALLBACK: readonly Testimonial[] = [
   {
     quote:
       'They moved through our wedding the way good guests do — present, attentive, never in the way. The photographs we have a year later still feel like the day did.',
@@ -24,3 +27,29 @@ export const TESTIMONIALS: readonly Testimonial[] = [
     context: 'Annual portrait · 2025',
   },
 ];
+
+// Static export so server pages with `'use client'` ancestors still work.
+export const TESTIMONIALS = FALLBACK;
+
+export async function getTestimonials(): Promise<readonly Testimonial[]> {
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from('testimonials')
+      .select('quote, attribution, context')
+      .eq('approved', true)
+      .order('featured', { ascending: false })
+      .order('order_index')
+      .limit(12);
+    if (data && data.length > 0) {
+      return data.map((t) => ({
+        quote: t.quote,
+        attribution: t.attribution,
+        context: t.context ?? '',
+      }));
+    }
+  } catch {
+    // Fall through to static fallback.
+  }
+  return FALLBACK;
+}

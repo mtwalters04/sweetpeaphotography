@@ -5,6 +5,8 @@ import { signOut } from '@/app/(auth)/actions';
 
 const TABS = [
   { href: '/account', label: 'Overview' },
+  { href: '/account/bookings', label: 'Bookings' },
+  { href: '/account/requests', label: 'Requests' },
   { href: '/account/profile', label: 'Profile' },
 ] as const;
 

@@ -5,8 +5,9 @@ let cached: Stripe | null = null;
 
 export function getStripe(): Stripe {
   if (cached) return cached;
+  // Pinned to the version the installed SDK was generated against.
   cached = new Stripe(env.stripeSecret(), {
-    apiVersion: '2025-01-27.acacia' as Stripe.LatestApiVersion,
+    apiVersion: '2026-04-22.dahlia',
   });
   return cached;
 }

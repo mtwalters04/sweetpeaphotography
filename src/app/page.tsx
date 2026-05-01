@@ -18,8 +18,8 @@ const formatPrice = (n: number) =>
 export default function Home() {
   return (
     <>
-      {/* HERO */}
-      <section className="relative h-[100svh] w-full overflow-hidden">
+      {/* HERO — slightly shorter on small screens so work appears sooner while scrolling */}
+      <section className="relative min-h-[88svh] md:h-[100svh] w-full overflow-hidden">
         <Image
           src={placeholderSrc('hero-home', 2200, 1400)}
           alt=""
@@ -30,12 +30,12 @@ export default function Home() {
         />
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-ink/10 via-transparent to-ink/55"
+          className="absolute inset-0 bg-gradient-to-b from-ink/15 via-transparent to-ink/50"
         />
-        <div className="relative z-10 h-full max-w-content mx-auto px-6 flex flex-col">
-          <div className="flex-1" />
-          <div className="pb-[clamp(72px,11vw,160px)]">
-            <p className="text-bone/85 text-t-12 uppercase tracking-[0.28em] mb-8 font-light">
+        <div className="relative z-10 h-full min-h-[88svh] md:min-h-0 max-w-content mx-auto px-6 flex flex-col">
+          <div className="flex-1 min-h-[20svh] md:min-h-0" />
+          <div className="pb-[clamp(64px,10vw,160px)]">
+            <p className="text-bone/85 text-t-12 mb-8 font-light eyebrow-label">
               {STUDIO.name} · est. quietly
             </p>
             <h1 className="font-serif text-bone text-[clamp(2.75rem,7vw,5.75rem)] leading-[0.98] tracking-[-0.02em] max-w-5xl">
@@ -56,64 +56,89 @@ export default function Home() {
               </CtaLink>
             </div>
           </div>
-          <div className="pb-6 text-bone/60 text-t-12 uppercase tracking-[0.3em] hidden md:block">
-            Scroll
-          </div>
+          <div className="pb-6 text-bone/55 text-t-12 eyebrow-label">Scroll</div>
         </div>
       </section>
 
-      {/* PORTFOLIO — proof, immediately */}
-      <section className="pt-[clamp(96px,12vw,160px)] pb-[clamp(96px,12vw,176px)]">
-        <div className="max-w-content mx-auto px-6 mb-20 grid grid-cols-12 gap-6 items-end">
-          <div className="col-span-12 md:col-span-7">
+      {/* PORTFOLIO — primary sales surface: work, social proof, and booking paths in one band */}
+      <section className="pt-[clamp(80px,11vw,160px)] pb-[clamp(96px,12vw,176px)]">
+        <div className="max-w-content mx-auto px-6 mb-16 md:mb-20 grid grid-cols-12 gap-6 items-end">
+          <div className="col-span-12 lg:col-span-8">
             <SectionEyebrow number="01" label="Recent work" />
-            <h2 className="font-serif text-[clamp(2rem,4.5vw,3.5rem)] leading-[1.05] tracking-[-0.015em] mt-8">
-              The work, <span className="italic font-light">first.</span>
+            <h2 className="font-serif text-[clamp(2rem,4.5vw,3.5rem)] leading-[1.05] tracking-[-0.015em] mt-8 max-w-3xl">
+              The work up front — <span className="italic font-light">then the calendar.</span>
             </h2>
+            <p className="text-t-16 text-ash mt-6 max-w-prose font-light leading-relaxed">
+              Browse collections as you would a wall in the studio. When the fit feels right, we
+              hold the date with a deposit.
+            </p>
           </div>
-          <div className="col-span-12 md:col-span-4 md:col-start-9 md:text-right">
+          <div className="col-span-12 lg:col-span-3 lg:col-start-10 lg:text-right flex flex-wrap gap-x-10 gap-y-4 items-center lg:justify-end">
             <CtaLink href="/portfolio" variant="primary">
               All collections
             </CtaLink>
           </div>
         </div>
 
-        {/* Editorial mosaic — five collections, asymmetric */}
-        <div className="max-w-content mx-auto px-6 grid grid-cols-12 gap-x-6 gap-y-[clamp(48px,6vw,96px)]">
+        <div className="max-w-content mx-auto px-6 grid grid-cols-12 gap-x-6 gap-y-[clamp(40px,5vw,88px)]">
           <PortfolioCard
             collection={featured[0]!}
-            spanClass="col-span-12 md:col-span-7"
+            spanClass="col-span-12 lg:col-span-7"
             offsetClass=""
             aspect="aspect-[4/5]"
-            sizes="(min-width: 768px) 58vw, 100vw"
+            sizes="(min-width: 1024px) 55vw, (min-width: 768px) 58vw, 100vw"
           />
+
+          <aside className="col-span-12 lg:col-span-4 lg:col-start-9 flex flex-col justify-between gap-10 border border-mist bg-vellum/45 p-8 md:p-10 lg:min-h-[280px]">
+            <div>
+              <p className="text-ash text-t-12 eyebrow-label mb-6">From a recent client</p>
+              <blockquote className="font-serif text-[clamp(1.2rem,2.1vw,1.55rem)] leading-[1.38] text-ink tracking-[-0.01em] font-light">
+                <span className="text-ash/70 not-italic">“</span>
+                {featuredTestimonial.quote}
+                <span className="text-ash/70 not-italic">”</span>
+              </blockquote>
+              <p className="text-t-14 text-ash mt-8 leading-relaxed">
+                <span className="font-serif italic text-ash/70 mr-2">—</span>
+                {featuredTestimonial.attribution}
+                <span className="text-ash/45 mx-2">·</span>
+                <span className="text-ash/85">{featuredTestimonial.context}</span>
+              </p>
+            </div>
+            <div className="flex flex-col gap-5 pt-6 border-t border-mist/90">
+              <CtaLink href="/book">See available dates</CtaLink>
+              <CtaLink href="/contact" variant="secondary">
+                Request a custom date
+              </CtaLink>
+            </div>
+          </aside>
+
           <PortfolioCard
             collection={featured[1]!}
-            spanClass="col-span-12 md:col-span-4"
-            offsetClass="md:col-start-9 md:mt-32"
-            aspect="aspect-[4/5]"
-            sizes="(min-width: 768px) 33vw, 100vw"
-          />
-          <PortfolioCard
-            collection={featured[2]!}
             spanClass="col-span-12 md:col-span-5"
-            offsetClass="md:col-start-2"
-            aspect="aspect-[3/4]"
+            offsetClass="lg:col-start-1"
+            aspect="aspect-[4/5]"
             sizes="(min-width: 768px) 42vw, 100vw"
           />
           <PortfolioCard
-            collection={featured[3]!}
-            spanClass="col-span-12 md:col-span-6"
-            offsetClass="md:col-start-7 md:mt-24"
-            aspect="aspect-[4/3]"
+            collection={featured[2]!}
+            spanClass="col-span-12 md:col-span-6 md:col-start-7"
+            offsetClass="md:mt-14 lg:mt-20"
+            aspect="aspect-[3/4]"
             sizes="(min-width: 768px) 50vw, 100vw"
           />
           <PortfolioCard
+            collection={featured[3]!}
+            spanClass="col-span-12 md:col-span-7"
+            offsetClass="md:col-start-1"
+            aspect="aspect-[4/3]"
+            sizes="(min-width: 768px) 58vw, 100vw"
+          />
+          <PortfolioCard
             collection={featured[4]!}
-            spanClass="col-span-12 md:col-span-8"
-            offsetClass="md:col-start-3"
+            spanClass="col-span-12 md:col-span-4 md:col-start-9"
+            offsetClass="md:mt-12 lg:mt-16"
             aspect="aspect-[3/2]"
-            sizes="(min-width: 768px) 66vw, 100vw"
+            sizes="(min-width: 768px) 33vw, 100vw"
           />
         </div>
       </section>
@@ -183,30 +208,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* TESTIMONIAL */}
-      <section className="py-[clamp(120px,16vw,224px)] border-t border-mist bg-mist/30">
-        <div className="max-w-content mx-auto px-6">
-          <div className="text-center mb-16">
-            <SectionEyebrow number="04" label="From a recent client" />
-          </div>
-          <blockquote className="font-serif text-[clamp(1.6rem,3vw,2.5rem)] leading-[1.3] max-w-4xl mx-auto text-center tracking-[-0.005em]">
-            <span className="font-light italic text-ink/60">“</span>
-            {featuredTestimonial.quote}
-            <span className="font-light italic text-ink/60">”</span>
-          </blockquote>
-          <p className="text-t-12 uppercase tracking-[0.25em] text-ash mt-12 text-center">
-            <span className="font-serif italic normal-case text-ash text-t-16 mr-3">—</span>
-            {featuredTestimonial.attribution}
-            <span className="text-ash/60 mx-3">·</span>
-            {featuredTestimonial.context}
-          </p>
-        </div>
-      </section>
-
       {/* CLOSING CTA */}
       <section className="py-[clamp(120px,18vw,256px)] border-t border-mist">
         <div className="max-w-content mx-auto px-6 text-center">
-          <p className="text-ash text-t-12 uppercase tracking-[0.28em] mb-10">Ready when you are</p>
+          <p className="text-ash text-t-12 eyebrow-label mb-10">Ready when you are</p>
           <h2 className="font-serif text-[clamp(2.5rem,6vw,5rem)] leading-[1] tracking-[-0.02em] max-w-4xl mx-auto">
             Find a date,
             <br />
@@ -253,7 +258,7 @@ function PortfolioCard({
           alt={collection.cover.alt}
           fill
           sizes={sizes}
-          className="object-cover transition-all duration-700 ease-out group-hover:scale-[1.015]"
+          className="object-cover transition-opacity duration-500 ease-out group-hover:opacity-95"
         />
       </div>
       <div className="mt-6 flex items-baseline justify-between gap-6">
@@ -267,7 +272,7 @@ function PortfolioCard({
         </div>
         <span
           aria-hidden
-          className="text-ash text-t-22 leading-none transform transition-transform duration-500 group-hover:translate-x-1 group-hover:text-accent"
+          className="text-ash text-t-22 leading-none transition-colors duration-500 group-hover:text-accent"
         >
           →
         </span>

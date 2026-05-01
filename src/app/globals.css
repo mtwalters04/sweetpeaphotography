@@ -3,13 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --ink: #1a1716;
-  --bone: #f4efe9;
-  --vellum: #ece4d9;
-  --mist: #e6dfd6;
-  --ash: #7a716a;
-  --accent: #8a6f5a;
-  --shadow: rgba(26, 23, 22, 0.08);
+  --ink: #181614;
+  --bone: #f3eee8;
+  --vellum: #ebe3d8;
+  --mist: #e4dcd3;
+  /* Slightly cool-neutral gray for secondary type — reads “gallery wall,” not SaaS */
+  --ash: #6e6862;
+  --accent: #7d6352;
+  --shadow: rgba(24, 22, 20, 0.07);
 }
 
 html {
@@ -26,10 +27,15 @@ body {
   font-weight: 350;
 }
 
-/* Editorial defaults: serif headings inherit Fraunces with a soft, low-contrast
-   feel by default. Use `font-light` for the high-end italic accents. */
 h1, h2, h3, h4, h5, h6 {
-  font-feature-settings: 'ss01', 'ss02';
+  font-weight: 400;
+}
+
+/* DESIGN_SYSTEM: eyebrow labels in small caps, not shouty all-caps */
+.eyebrow-label {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.22em;
+  text-transform: lowercase;
 }
 
 ::selection {

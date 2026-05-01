@@ -4,11 +4,11 @@ type Variant = 'primary' | 'secondary' | 'on-image';
 
 const styles: Record<Variant, string> = {
   primary:
-    'inline-flex items-center gap-3 text-t-14 uppercase tracking-[0.18em] text-ink border-b border-ink pb-1 hover:text-accent hover:border-accent transition-colors duration-500',
+    'inline-flex min-h-[44px] items-center gap-3 text-t-14 uppercase tracking-[0.18em] text-ink border-b border-ink pb-1 hover:text-accent hover:border-accent transition-colors duration-500 max-md:py-1',
   secondary:
-    'inline-flex items-center gap-3 text-t-14 uppercase tracking-[0.18em] text-ash hover:text-ink transition-colors duration-500',
+    'inline-flex min-h-[44px] items-center gap-3 text-t-14 uppercase tracking-[0.18em] text-ash hover:text-ink transition-colors duration-500 max-md:py-1',
   'on-image':
-    'inline-flex items-center gap-3 text-t-14 uppercase tracking-[0.18em] text-bone border-b border-bone/70 pb-1 hover:text-bone/90 hover:border-bone transition-colors duration-500',
+    'inline-flex min-h-[44px] items-center gap-3 text-t-14 uppercase tracking-[0.18em] text-bone border-b border-bone/70 pb-1 hover:text-bone/90 hover:border-bone transition-colors duration-500 max-md:py-1',
 };
 
 export function CtaLink({

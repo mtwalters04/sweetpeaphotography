@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { createClient } from '@/lib/supabase/server';
 import { fmtDateAndTime, fmtFullDate } from '@/lib/dates';
 import { formatUsd } from '@/lib/money';
+import { releaseExpiredHolds } from '@/lib/bookings';
 import { SectionEyebrow } from '@/components/section-eyebrow';
 import { CtaLink } from '@/components/cta-link';
 
@@ -26,6 +27,10 @@ type SlotRow = {
 };
 
 export default async function BookPage() {
+  // Lazy cleanup: Hobby plan can't run sub-daily crons, so we release stale
+  // holds (15-min expiry) on the read path.
+  await releaseExpiredHolds().catch(() => undefined);
+
   const supabase = await createClient();
   const { data: slots } = await supabase
     .from('available_slots')

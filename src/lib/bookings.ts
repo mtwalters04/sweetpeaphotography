@@ -11,6 +11,9 @@ export const HOLD_MINUTES = 15;
  * checkouts can't double-hold the same slot.
  */
 export async function holdSlot(slotId: string, userId: string): Promise<boolean> {
+  // Lazy-release expired holds first — Hobby plan can't run sub-daily crons,
+  // so we sweep here to avoid a 15-min hold sticking for a day.
+  await releaseExpiredHolds().catch(() => undefined);
   const admin = createAdminClient();
   const expiresAt = new Date(Date.now() + HOLD_MINUTES * 60_000).toISOString();
   const { data, error } = await admin

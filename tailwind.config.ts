@@ -7,6 +7,7 @@ const config: Config = {
       colors: {
         ink: 'var(--ink)',
         bone: 'var(--bone)',
+        vellum: 'var(--vellum)',
         mist: 'var(--mist)',
         ash: 'var(--ash)',
         accent: 'var(--accent)',

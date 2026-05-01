@@ -5,6 +5,7 @@
 :root {
   --ink: #1a1716;
   --bone: #f4efe9;
+  --vellum: #ece4d9;
   --mist: #e6dfd6;
   --ash: #7a716a;
   --accent: #8a6f5a;
@@ -22,9 +23,27 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 1rem;
   line-height: 1.6;
+  font-weight: 350;
+}
+
+/* Editorial defaults: serif headings inherit Fraunces with a soft, low-contrast
+   feel by default. Use `font-light` for the high-end italic accents. */
+h1, h2, h3, h4, h5, h6 {
+  font-feature-settings: 'ss01', 'ss02';
 }
 
 ::selection {
   background-color: var(--accent);
   color: var(--bone);
+}
+
+/* Subtle hairline rule used between editorial sections. */
+.rule-soft {
+  border-top: 1px solid color-mix(in srgb, var(--ash) 30%, transparent);
+}
+
+/* SectionEyebrow uses a serif italic numeral that should feel like a magazine
+   masthead. The component already applies italic; this keeps the fallback. */
+.not-italic-fallback {
+  font-style: italic;
 }

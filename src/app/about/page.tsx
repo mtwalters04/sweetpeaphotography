@@ -2,13 +2,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { placeholderSrc } from '@/lib/placeholder';
+import { CtaLink } from '@/components/cta-link';
+import { SectionEyebrow } from '@/components/section-eyebrow';
 
 export const metadata: Metadata = {
   title: 'About',
   description: 'Two photographers, one studio, one local market.',
 };
 
-// TODO: replace with real photographer bios + photos.
 const PHOTOGRAPHERS = [
   {
     seed: 'photographer-a',
@@ -27,81 +28,92 @@ const PHOTOGRAPHERS = [
 export default function About() {
   return (
     <>
-      <header className="pt-[clamp(128px,18vw,224px)] pb-[clamp(64px,8vw,128px)]">
+      <header className="pt-[clamp(160px,22vw,288px)] pb-[clamp(72px,10vw,144px)]">
         <div className="max-w-content mx-auto px-6 grid grid-cols-12 gap-6">
-          <div className="col-span-12 md:col-span-7">
-            <p className="text-ash text-t-12 uppercase tracking-[0.2em] mb-6">The studio</p>
-            <h1 className="font-serif text-t-48 md:text-t-64 leading-[1.05]">
-              Two photographers. One studio. The same patient eye.
+          <div className="col-span-12 md:col-span-9">
+            <SectionEyebrow number="—" label="The studio" />
+            <h1 className="font-serif text-[clamp(2.75rem,7vw,5.5rem)] leading-[0.98] tracking-[-0.02em] mt-10">
+              Two photographers.
+              <br />
+              <span className="italic font-light">The same patient eye.</span>
             </h1>
           </div>
         </div>
       </header>
 
-      <section className="pb-[clamp(96px,12vw,192px)]">
+      <section className="pb-[clamp(96px,14vw,192px)]">
         <div className="max-w-content mx-auto px-6 grid grid-cols-12 gap-6">
-          <div className="col-span-12 md:col-span-7 md:col-start-3">
-            <p className="text-t-22 leading-[1.5] max-w-prose">
-              We started Sweet Pea because we wanted a quieter way to do this work — fewer
+          <div className="col-span-12 md:col-span-8 md:col-start-3">
+            <p className="font-serif text-[clamp(1.5rem,3vw,2.25rem)] leading-[1.35] max-w-prose">
+              We started Sweet Pea because we wanted a{' '}
+              <span className="italic font-light">quieter way</span> to do this work — fewer
               clients, longer relationships, photographs that survive a move and a renovation and
               the back of a drawer.
             </p>
-            <p className="text-t-18 text-ash leading-[1.6] max-w-prose mt-8">
-              Most of our weeks are weddings, portraits, and families we have known for years. We
-              shoot in a single local market, travel by request, and book a small number of days
-              each month so the editing never gets ahead of the living.
-            </p>
-            <p className="text-t-18 text-ash leading-[1.6] max-w-prose mt-6">
-              You will usually have both of us on a wedding day. For a portrait it is one of us
-              and a wide window.
-            </p>
+            <div className="space-y-6 mt-12 text-t-18 text-ash font-light leading-relaxed max-w-prose">
+              <p>
+                Most of our weeks are weddings, portraits, and families we have known for years. We
+                shoot in a single local market, travel by request, and book a small number of days
+                each month so the editing never gets ahead of the living.
+              </p>
+              <p>
+                You will usually have both of us on a wedding day. For a portrait it is one of us
+                and a wide window.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Photographers */}
-      <section className="pb-[clamp(96px,12vw,192px)]">
-        <div className="max-w-content mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-20">
-          {PHOTOGRAPHERS.map((p) => (
-            <article key={p.seed} className="flex flex-col">
+      <section className="pb-[clamp(96px,14vw,192px)] border-t border-mist pt-[clamp(72px,10vw,144px)]">
+        <div className="max-w-content mx-auto px-6 mb-16">
+          <SectionEyebrow number="01" label="Behind the camera" />
+        </div>
+        <div className="max-w-content mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-24">
+          {PHOTOGRAPHERS.map((p, i) => (
+            <article key={p.seed} className={`flex flex-col ${i === 1 ? 'md:mt-32' : ''}`}>
               <div className="relative aspect-[4/5] bg-mist overflow-hidden">
                 <Image
-                  src={placeholderSrc(p.seed, 1000, 1250)}
+                  src={placeholderSrc(p.seed, 1200, 1500)}
                   alt={`Portrait of ${p.name}`}
                   fill
                   sizes="(min-width: 768px) 50vw, 100vw"
                   className="object-cover"
                 />
               </div>
-              <div className="mt-8">
-                <p className="text-ash text-t-12 uppercase tracking-[0.2em] mb-2">{p.role}</p>
-                <h2 className="font-serif text-t-36">{p.name}</h2>
-                <p className="text-ash text-t-16 mt-4 max-w-prose">{p.bio}</p>
+              <div className="mt-10">
+                <p className="text-ash text-t-12 uppercase tracking-[0.22em] mb-3">{p.role}</p>
+                <h2 className="font-serif text-[clamp(2rem,3.5vw,2.75rem)] leading-tight tracking-[-0.01em]">
+                  {p.name}
+                </h2>
+                <p className="text-ash text-t-16 mt-5 max-w-prose font-light leading-relaxed">
+                  {p.bio}
+                </p>
               </div>
             </article>
           ))}
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="pb-[clamp(96px,12vw,192px)]">
+      <section className="py-[clamp(120px,18vw,224px)] border-t border-mist">
         <div className="max-w-content mx-auto px-6 text-center">
-          <p className="font-serif text-t-36 max-w-prose mx-auto leading-tight">
-            We would love to hear about your day.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
+          <p className="text-ash text-t-12 uppercase tracking-[0.28em] mb-10">Begin</p>
+          <h2 className="font-serif text-[clamp(2.25rem,5vw,4rem)] leading-[1] tracking-[-0.02em] max-w-3xl mx-auto">
+            We would love to hear
+            <br />
+            <span className="italic font-light">about your day.</span>
+          </h2>
+          <div className="mt-14 flex flex-wrap items-center justify-center gap-x-14 gap-y-6">
             <Link
               href="/contact"
-              className="text-t-14 text-bone bg-ink px-6 py-3 hover:bg-accent transition-colors"
+              className="inline-flex items-center gap-3 text-t-14 uppercase tracking-[0.18em] text-ink border-b border-ink pb-1 hover:text-accent hover:border-accent transition-colors duration-500"
             >
-              Get in touch
+              <span>Get in touch</span>
+              <span aria-hidden>→</span>
             </Link>
-            <Link
-              href="/services"
-              className="text-t-14 underline underline-offset-4 hover:text-accent transition-colors"
-            >
+            <CtaLink href="/services" variant="secondary">
               See services
-            </Link>
+            </CtaLink>
           </div>
         </div>
       </section>

@@ -2,8 +2,9 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
+import { env } from '@/lib/env';
+import { checkLimit, clientIp, limiters } from '@/lib/rate-limit';
 
 export type AuthState = { error: string | null; message?: string };
 
@@ -12,10 +13,22 @@ const safeNext = (raw: FormDataEntryValue | null): string => {
   return v.startsWith('/') && !v.startsWith('//') ? v : '/account';
 };
 
+async function gate(): Promise<AuthState | null> {
+  const ip = await clientIp();
+  const r = await checkLimit(limiters.auth, ip);
+  if (!r.ok) {
+    return { error: `Too many attempts. Try again in ${r.retryAfterSeconds}s.` };
+  }
+  return null;
+}
+
 export async function signInWithPassword(
   _prev: AuthState,
   formData: FormData,
 ): Promise<AuthState> {
+  const blocked = await gate();
+  if (blocked) return blocked;
+
   const email = String(formData.get('email') ?? '').trim();
   const password = String(formData.get('password') ?? '');
   const next = safeNext(formData.get('next'));
@@ -32,19 +45,21 @@ export async function signUpWithPassword(
   _prev: AuthState,
   formData: FormData,
 ): Promise<AuthState> {
+  const blocked = await gate();
+  if (blocked) return blocked;
+
   const email = String(formData.get('email') ?? '').trim();
   const password = String(formData.get('password') ?? '');
   const fullName = String(formData.get('full_name') ?? '').trim();
 
   const supabase = await createClient();
-  const origin = (await headers()).get('origin') ?? '';
 
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: { full_name: fullName },
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: `${env.siteUrl()}/auth/callback`,
     },
   });
 
@@ -59,14 +74,16 @@ export async function signInWithMagicLink(
   _prev: AuthState,
   formData: FormData,
 ): Promise<AuthState> {
+  const blocked = await gate();
+  if (blocked) return blocked;
+
   const email = String(formData.get('email') ?? '').trim();
 
   const supabase = await createClient();
-  const origin = (await headers()).get('origin') ?? '';
 
   const { error } = await supabase.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: `${origin}/auth/callback` },
+    options: { emailRedirectTo: `${env.siteUrl()}/auth/callback` },
   });
 
   if (error) return { error: error.message };

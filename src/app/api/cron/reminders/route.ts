@@ -11,8 +11,12 @@ export const dynamic = 'force-dynamic';
 // Sends T-7 reminder to bookings whose start is between 7d and 7d+24h from now,
 // once. Tracks via email_log to be idempotent.
 export async function GET(request: NextRequest) {
+  const secret = env.cronSecret();
+  if (!secret) {
+    return NextResponse.json({ error: 'CRON_SECRET not configured' }, { status: 500 });
+  }
   const auth = request.headers.get('authorization') ?? '';
-  if (env.cronSecret() && auth !== `Bearer ${env.cronSecret()}`) {
+  if (auth !== `Bearer ${secret}`) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 

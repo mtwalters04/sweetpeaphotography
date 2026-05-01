@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { presignUpload } from '@/lib/r2';
 import { env } from '@/lib/env';
+import { checkLimit, limiters } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -23,6 +24,14 @@ export async function POST(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Sign in to upload.' }, { status: 401 });
+
+  const rl = await checkLimit(limiters.presign, user.id);
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: 'Too many uploads. Slow down.' },
+      { status: 429, headers: { 'Retry-After': String(rl.retryAfterSeconds ?? 60) } },
+    );
+  }
 
   let body: {
     filename?: string;
@@ -48,7 +57,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'File too large (max 10 MB).' }, { status: 400 });
   }
 
-  // Gallery uploads must be staff. Check role.
+  // Gallery uploads must be staff and target a real booking.
   if (kind === 'gallery') {
     const { data: profile } = await supabase
       .from('profiles')
@@ -56,6 +65,29 @@ export async function POST(request: NextRequest) {
       .eq('id', user.id)
       .single();
     if (profile?.role !== 'photographer' && profile?.role !== 'super_admin') {
+      return NextResponse.json({ error: 'Forbidden.' }, { status: 403 });
+    }
+    if (!body.booking_id) {
+      return NextResponse.json({ error: 'booking_id required.' }, { status: 400 });
+    }
+    const { data: booking } = await supabase
+      .from('bookings')
+      .select('id')
+      .eq('id', body.booking_id)
+      .single();
+    if (!booking) {
+      return NextResponse.json({ error: 'Unknown booking.' }, { status: 404 });
+    }
+  }
+
+  // Request uploads: if a request_id is provided, the caller must own that request.
+  if (kind === 'request' && body.request_id) {
+    const { data: req } = await supabase
+      .from('custom_requests')
+      .select('customer_id')
+      .eq('id', body.request_id)
+      .single();
+    if (!req || req.customer_id !== user.id) {
       return NextResponse.json({ error: 'Forbidden.' }, { status: 403 });
     }
   }

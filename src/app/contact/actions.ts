@@ -8,6 +8,7 @@ import {
   RequestReceivedEmail,
 } from '@/lib/emails/templates';
 import { env } from '@/lib/env';
+import { checkLimit, clientIp, limiters } from '@/lib/rate-limit';
 
 export type RequestState = {
   error: string | null;
@@ -25,6 +26,23 @@ export async function submitCustomRequest(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: null, ok: false, needsAccount: true };
+
+  const rl = await checkLimit(limiters.contact, user.id);
+  if (!rl.ok) {
+    return {
+      error: `You've submitted several requests recently. Try again in ${Math.ceil((rl.retryAfterSeconds ?? 60) / 60)}m.`,
+      ok: false,
+      needsAccount: false,
+    };
+  }
+  const ipRl = await checkLimit(limiters.contact, await clientIp());
+  if (!ipRl.ok) {
+    return {
+      error: `Too many submissions from your network. Try again later.`,
+      ok: false,
+      needsAccount: false,
+    };
+  }
 
   const message = String(fd.get('message') ?? '').trim();
   if (!message) return { error: 'Tell us a little about the day.', ok: false, needsAccount: false };

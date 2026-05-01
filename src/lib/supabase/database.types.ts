@@ -786,6 +786,14 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["profile_role"]
       }
+      rate_limit_check: {
+        Args: { p_key: string; p_window_seconds: number; p_max: number }
+        Returns: { allowed: boolean; retry_after_seconds: number }[]
+      }
+      rate_limit_prune: {
+        Args: { p_older_than_seconds?: number }
+        Returns: number
+      }
     }
     Enums: {
       cancelled_by: "customer" | "studio" | "system"

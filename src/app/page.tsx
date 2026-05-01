@@ -19,43 +19,44 @@ export default function Home() {
   return (
     <>
       {/* HERO — desktop: text panel + right-side image blend for readability */}
-      <section className="relative min-h-[88svh] md:h-[100svh] w-full overflow-hidden bg-bone">
+      <section className="relative min-h-[96svh] w-full overflow-hidden bg-bone">
         <Image
-          src="/images/hero-home.png"
-          alt="Sunrise over a still lake, mountains reflected in the water, a lone figure on the shore"
+          src="/images/hero-home-estate.png"
+          alt="Historic riverside estate at golden hour with moss-draped oaks and a columned porch"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[62%_center] md:object-right"
+          className="object-cover object-[40%_center] md:object-right"
         />
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-ink/15 via-transparent to-ink/60 md:hidden"
+          className="absolute inset-0 bg-gradient-to-b from-ink/20 via-ink/5 to-ink/65 md:hidden"
         />
         <div
           aria-hidden
-          className="hidden md:block absolute inset-y-0 left-0 w-[58%] bg-bone"
+          className="hidden md:block absolute inset-0 bg-[linear-gradient(90deg,rgba(243,238,232,0.95)_0%,rgba(243,238,232,0.9)_10%,rgba(243,238,232,0.8)_22%,rgba(243,238,232,0.62)_36%,rgba(243,238,232,0.38)_49%,rgba(243,238,232,0.16)_61%,rgba(243,238,232,0.06)_69%,rgba(243,238,232,0)_78%)]"
         />
         <div
           aria-hidden
-          className="hidden md:block absolute inset-y-0 left-[56%] w-[18%] bg-gradient-to-r from-bone via-bone/75 to-transparent"
+          className="hidden md:block absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-bone/70 via-bone/38 to-transparent"
         />
         <div
           aria-hidden
-          className="hidden md:block absolute inset-x-0 bottom-0 h-[22vh] bg-gradient-to-b from-transparent to-bone"
+          className="hidden md:block absolute inset-x-0 bottom-0 h-[28vh] bg-gradient-to-b from-transparent via-bone/65 to-bone"
         />
-        <div className="relative z-10 h-full min-h-[88svh] md:min-h-0 max-w-content mx-auto px-6 flex flex-col">
-          <div className="flex-1 min-h-[20svh] md:min-h-0" />
-          <div className="pb-[clamp(64px,10vw,160px)] md:max-w-[56%]">
-            <p className="text-bone/85 md:text-ash text-t-12 mb-8 font-light eyebrow-label">
+        <div className="relative z-10 h-full min-h-[96svh] px-6 md:px-[clamp(40px,6vw,108px)] flex flex-col">
+          <div className="flex-1 min-h-[16svh] md:min-h-[14svh]" />
+          <div className="pb-[clamp(42px,7vw,96px)] md:max-w-[48rem]">
+            <div className="rounded-sm bg-bone/18 backdrop-blur-[1.5px] px-4 py-4 md:bg-transparent md:backdrop-blur-0 md:px-0 md:py-0">
+            <p className="text-bone/95 md:text-ash/95 text-t-12 mb-8 font-normal eyebrow-label">
               {STUDIO.name} · est. quietly
             </p>
-            <h1 className="font-serif text-bone md:text-ink text-[clamp(2.75rem,7vw,5.75rem)] leading-[0.98] tracking-[-0.02em] max-w-5xl text-wrap-balance">
+            <h1 className="font-serif text-bone md:text-ink text-[clamp(3.1rem,7.5vw,6.1rem)] leading-[0.98] tracking-[-0.02em] max-w-5xl text-wrap-balance [text-shadow:0_1px_12px_rgba(24,22,20,0.22)] md:[text-shadow:none]">
               Heirlooms,
               <br />
               <span className="italic font-light">in modern light.</span>
             </h1>
-            <p className="text-bone/80 md:text-ash text-t-18 mt-10 max-w-prose font-light leading-relaxed text-wrap-pretty">
+            <p className="text-bone/95 md:text-ash text-[1.18rem] mt-9 max-w-prose font-medium leading-relaxed text-wrap-pretty [text-shadow:0_1px_10px_rgba(24,22,20,0.18)] md:[text-shadow:none]">
               Portrait and event photography for people who want the photographs to outlast the
               party. Booking now for late spring through autumn.
             </p>
@@ -75,13 +76,48 @@ export default function Home() {
                 Request a custom date
               </CtaLink>
             </div>
+
+            </div>
+
+            <div className="mt-10 border border-mist/80 bg-bone/86 backdrop-blur-[2px] p-5 md:p-6">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+                <div className="md:col-span-5">
+                  <p className="text-t-12 text-ash/95 eyebrow-label mb-3">Start here</p>
+                  <h2 className="font-serif text-[clamp(1.45rem,2.7vw,2.2rem)] leading-[1.15] text-wrap-balance">
+                    Choose your path,
+                    <br />
+                    <span className="italic font-light">book in minutes.</span>
+                  </h2>
+                </div>
+                <div className="md:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <article className="border border-mist bg-bone p-4">
+                    <p className="text-t-12 text-ash/90 eyebrow-label mb-3">Fastest route</p>
+                    <p className="font-serif text-[clamp(1.15rem,1.6vw,1.35rem)] leading-tight">
+                      Book an available date
+                    </p>
+                    <p className="text-t-14 text-ash/95 mt-3 leading-relaxed">
+                      Open sessions, instant deposit, confirmed booking.
+                    </p>
+                  </article>
+                  <article className="border border-mist bg-bone p-4">
+                    <p className="text-t-12 text-ash/90 eyebrow-label mb-3">Need flexibility</p>
+                    <p className="font-serif text-[clamp(1.15rem,1.6vw,1.35rem)] leading-tight">
+                      Request a custom date
+                    </p>
+                    <p className="text-t-14 text-ash/95 mt-3 leading-relaxed">
+                      Share your preferred date and details for a tailored quote.
+                    </p>
+                  </article>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="pb-6 text-bone/55 md:text-ash/75 text-t-12 eyebrow-label">Scroll</div>
         </div>
       </section>
 
       {/* PORTFOLIO — primary sales surface: work, social proof, and booking paths in one band */}
-      <section className="pt-[clamp(80px,11vw,160px)] pb-[clamp(96px,12vw,176px)]">
+      <section className="pt-[clamp(72px,10vw,140px)] pb-[clamp(96px,12vw,176px)]">
         <div className="max-w-content mx-auto px-6 mb-16 md:mb-20 grid grid-cols-12 gap-6 items-end">
           <div className="col-span-12 lg:col-span-8">
             <SectionEyebrow number="01" label="Recent work" />

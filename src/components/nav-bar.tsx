@@ -14,15 +14,10 @@ const LINKS = [
 
 export function NavBar({ signedIn }: { signedIn: boolean }) {
   const pathname = usePathname();
-  const [solid, setSolid] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const onScroll = () => setSolid(window.scrollY > 12);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  const navChip =
+    'inline-flex min-h-[38px] items-center rounded-sm bg-bone px-3 text-[0.8rem] uppercase tracking-[0.19em] text-ink font-semibold hover:text-accent transition-colors duration-300';
 
   useEffect(() => {
     setMenuOpen(false);
@@ -38,28 +33,22 @@ export function NavBar({ signedIn }: { signedIn: boolean }) {
   }, [menuOpen]);
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
-        solid || menuOpen
-          ? 'bg-bone/90 backdrop-blur-md border-b border-mist/50'
-          : 'bg-transparent border-b border-transparent'
-      }`}
-    >
+    <header className="fixed top-0 left-0 right-0 z-50 bg-bone border-b border-mist">
       <nav className="max-w-content mx-auto px-6 h-[72px] md:h-20 flex items-center justify-between gap-4">
         <Link
           href="/"
-          className="font-serif text-t-22 tracking-[-0.01em] text-ink hover:text-accent transition-colors duration-500 shrink-0 min-h-[44px] flex items-center"
+          className="font-serif text-[1.52rem] tracking-[-0.01em] text-ink hover:text-accent transition-colors duration-300 shrink-0 min-h-[44px] flex items-center bg-vellum px-3 rounded-sm"
         >
           Sweet Pea
-          <span className="text-ash italic font-light text-t-14 ml-1.5">photography</span>
+          <span className="text-ash italic font-normal text-[0.97rem] ml-1.5">photography</span>
         </Link>
 
-        <ul className="hidden md:flex items-center gap-10 text-t-12 uppercase tracking-[0.18em] text-ink">
+        <ul className="hidden md:flex items-center gap-3">
           {LINKS.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="hover:text-accent transition-colors duration-500 py-2"
+                className={navChip}
               >
                 {link.label}
               </Link>
@@ -67,25 +56,25 @@ export function NavBar({ signedIn }: { signedIn: boolean }) {
           ))}
         </ul>
 
-        <div className="flex items-center gap-3 md:gap-8">
+        <div className="flex items-center gap-3 md:gap-3">
           {signedIn ? (
             <Link
               href="/account"
-              className="hidden sm:inline text-t-12 uppercase tracking-[0.18em] text-ink hover:text-accent transition-colors duration-500 py-2 min-h-[44px] flex items-center"
+              className={`hidden sm:flex ${navChip}`}
             >
               Account
             </Link>
           ) : (
             <Link
               href="/login"
-              className="hidden sm:inline text-t-12 uppercase tracking-[0.18em] text-ash hover:text-ink transition-colors duration-500 py-2 min-h-[44px] flex items-center"
+              className={`hidden sm:flex ${navChip} text-ink/85`}
             >
               Sign in
             </Link>
           )}
           <Link
             href="/book"
-            className="text-t-12 uppercase tracking-[0.2em] text-ink border-b border-ink pb-1 hover:text-accent hover:border-accent transition-colors duration-500 min-h-[44px] flex items-end max-md:mr-1"
+            className={`max-md:mr-1 ${navChip} bg-vellum`}
           >
             Book
           </Link>

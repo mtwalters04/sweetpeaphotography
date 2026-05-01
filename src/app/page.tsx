@@ -21,8 +21,8 @@ export default function Home() {
       {/* HERO — slightly shorter on small screens so work appears sooner while scrolling */}
       <section className="relative min-h-[88svh] md:h-[100svh] w-full overflow-hidden">
         <Image
-          src={placeholderSrc('hero-home', 2200, 1400)}
-          alt=""
+          src="/images/hero-home.png"
+          alt="Sunrise over a still lake, mountains reflected in the water, a lone figure on the shore"
           fill
           priority
           sizes="100vw"

@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useRef, useState, useTransition } from 'react';
 import { removePortfolioItem, setCoverImage } from './actions';
 import { uploadPortfolioImage, type PortfolioUploadPhase } from './uploadPortfolioImages';
@@ -109,8 +108,9 @@ export function PortfolioUploader({
       {coverUrl && (
         <div>
           <p className="text-ash text-t-12 eyebrow-label mb-3">Cover (listing grid and collection hero)</p>
-          <div className="relative aspect-[3/2] max-w-sm bg-mist">
-            <Image src={coverUrl} alt="Current cover" fill className="object-cover" />
+          <div className="relative aspect-[3/2] max-w-sm overflow-hidden bg-mist">
+            {/* Native img: R2 public URLs must not depend on next/image remotePatterns at build time. */}
+            <img src={coverUrl} alt="Current cover" className="absolute inset-0 h-full w-full object-cover" />
           </div>
         </div>
       )}

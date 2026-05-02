@@ -15,50 +15,38 @@ const PHOTOGRAPHERS = [
     seed: 'photographer-a',
     name: 'Photographer A',
     role: 'Lead photographer',
-    bio: 'Trained in painting before turning to photography. Works in soft natural light, never with flash, and is most at home with one person and a wide lens.',
+    bio: 'Painting before cameras. Soft natural light, no flash — one subject, one wide lens, all patience.',
   },
   {
     seed: 'photographer-b',
     name: 'Photographer B',
-    role: 'Second shooter, owner',
-    bio: 'Quiet on a wedding day, useful in a kitchen, indispensable when there are children. Handles the studio side and most of the editing.',
+    role: 'Second shooter · owner',
+    bio: 'Barely there on wedding days, essential with kids and logistics. Runs the desk and most of the edit.',
   },
 ] as const;
 
 export default function About() {
   return (
     <>
-      <section className="pt-[clamp(112px,12vw,156px)] pb-[clamp(96px,14vw,192px)]">
-        <div className="max-w-content mx-auto px-6 grid grid-cols-12 gap-6">
-          <div className="col-span-12 md:col-span-8 md:col-start-3">
-            <p className="font-serif text-[clamp(1.5rem,3vw,2.25rem)] leading-[1.35] max-w-prose">
-              We started Sweet Pea because we wanted a{' '}
-              <span className="italic font-light">quieter way</span> to do this work — fewer
-              clients, longer relationships, photographs that survive a move and a renovation and
-              the back of a drawer.
-            </p>
-            <div className="space-y-6 mt-12 text-t-18 text-ash font-light leading-relaxed max-w-prose">
-              <p>
-                Most of our weeks are weddings, portraits, and families we have known for years. We
-                shoot in a single local market, travel by request, and book a small number of days
-                each month so the editing never gets ahead of the living.
-              </p>
-              <p>
-                You will usually have both of us on a wedding day. For a portrait it is one of us
-                and a wide window.
-              </p>
-            </div>
-          </div>
+      <section className="pt-[clamp(112px,12vw,156px)] pb-[clamp(96px,14vw,192px)] border-b border-mist">
+        <div className="max-w-content mx-auto px-6">
+          <SectionEyebrow number="01" label="The studio" />
+          <h1 className="font-serif text-[clamp(2rem,4vw,3.25rem)] leading-[1.08] tracking-[-0.015em] mt-8 max-w-xl text-wrap-balance">
+            Two photographers, <span className="italic font-light">one local market.</span>
+          </h1>
+          <p className="text-t-16 text-ash mt-8 max-w-prose font-light leading-relaxed text-wrap-pretty md:max-w-xl">
+            Weddings, portraits, and families we have known for years. We shoot here first, travel
+            by request, and keep the calendar spare so editing never overtakes life. Weddings:
+            usually both of us. Portraits: one of us and a wide window.
+          </p>
         </div>
-      </section>
 
-      <section className="pb-[clamp(96px,14vw,192px)] border-t border-mist pt-[clamp(72px,10vw,144px)]">
-        <div className="max-w-content mx-auto px-6 mb-14">
-          <SectionEyebrow number="01" label="Behind the camera" />
-        </div>
-        <div className="max-w-content mx-auto px-6 space-y-20 md:space-y-24">
+        <div className="max-w-content mx-auto px-6 mt-16 md:mt-20 space-y-16 md:space-y-20">
           {PHOTOGRAPHERS.map((p, i) => (
-            <article key={p.seed} className="grid grid-cols-12 gap-8 md:gap-12 items-center">
+            <article
+              key={p.seed}
+              className="grid grid-cols-12 gap-8 md:gap-10 lg:gap-12 items-start"
+            >
               <div
                 className={`col-span-12 md:col-span-5 ${
                   i % 2 === 0 ? 'md:col-start-1' : 'md:col-start-8'
@@ -75,12 +63,12 @@ export default function About() {
                 </div>
               </div>
               <div
-                className={`col-span-12 md:col-span-5 ${
+                className={`col-span-12 md:col-span-6 ${
                   i % 2 === 0 ? 'md:col-start-7' : 'md:col-start-1 md:row-start-1'
-                }`}
+                } flex flex-col justify-center md:min-h-[min(100%,420px)]`}
               >
-                <p className="text-ash text-t-12 uppercase tracking-[0.22em] mb-3">{p.role}</p>
-                <h2 className="font-serif text-[clamp(2rem,3.5vw,2.75rem)] leading-tight tracking-[-0.01em]">
+                <p className="text-ash text-t-12 eyebrow-label mb-3">{p.role}</p>
+                <h2 className="font-serif text-[clamp(1.85rem,3vw,2.5rem)] leading-tight tracking-[-0.01em]">
                   {p.name}
                 </h2>
                 <p className="text-ash text-t-16 mt-5 max-w-prose font-light leading-relaxed">
@@ -94,8 +82,8 @@ export default function About() {
 
       <section className="py-[clamp(120px,18vw,224px)] border-t border-mist">
         <div className="max-w-content mx-auto px-6 text-center">
-          <p className="text-ash text-t-12 uppercase tracking-[0.28em] mb-10">Begin</p>
-          <h2 className="font-serif text-[clamp(2.25rem,5vw,4rem)] leading-[1] tracking-[-0.02em] max-w-3xl mx-auto">
+          <p className="text-ash text-t-12 eyebrow-label mb-10">Begin</p>
+          <h2 className="font-serif text-[clamp(2.25rem,5vw,4rem)] leading-[1] tracking-[-0.02em] max-w-3xl mx-auto text-wrap-balance">
             We would love to hear
             <br />
             <span className="italic font-light">about your day.</span>

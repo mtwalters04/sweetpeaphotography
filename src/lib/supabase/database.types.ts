@@ -536,6 +536,95 @@ export type Database = {
           },
         ]
       }
+      portfolio_collections: {
+        Row: {
+          cover_image_alt: string | null
+          cover_image_key: string | null
+          created_at: string
+          eyebrow: string | null
+          id: string
+          order_index: number
+          published: boolean
+          slug: string
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          cover_image_alt?: string | null
+          cover_image_key?: string | null
+          created_at?: string
+          eyebrow?: string | null
+          id?: string
+          order_index?: number
+          published?: boolean
+          slug: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          cover_image_alt?: string | null
+          cover_image_key?: string | null
+          created_at?: string
+          eyebrow?: string | null
+          id?: string
+          order_index?: number
+          published?: boolean
+          slug?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      portfolio_items: {
+        Row: {
+          alt: string | null
+          collection_id: string
+          content_type: string | null
+          created_at: string
+          file_name: string | null
+          id: string
+          orientation: string
+          order_index: number
+          r2_key: string
+          size_bytes: number | null
+        }
+        Insert: {
+          alt?: string | null
+          collection_id: string
+          content_type?: string | null
+          created_at?: string
+          file_name?: string | null
+          id?: string
+          orientation?: string
+          order_index?: number
+          r2_key: string
+          size_bytes?: number | null
+        }
+        Update: {
+          alt?: string | null
+          collection_id?: string
+          content_type?: string | null
+          created_at?: string
+          file_name?: string | null
+          id?: string
+          orientation?: string
+          order_index?: number
+          r2_key?: string
+          size_bytes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_items_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "portfolio_collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       photographers: {
         Row: {
           active: boolean
@@ -782,6 +871,10 @@ export type Database = {
       }
     }
     Functions: {
+      confirm_booking_with_credit_only: {
+        Args: { p_slot_id: string }
+        Returns: string
+      }
       current_user_role: {
         Args: never
         Returns: Database["public"]["Enums"]["profile_role"]

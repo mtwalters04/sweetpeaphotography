@@ -6,6 +6,12 @@ const optional = (name: string): string | undefined => {
   return v && v.length > 0 ? v : undefined;
 };
 
+/** Values you can keep in .env until real keys exist — they are treated as "not configured". */
+const isPlaceholderToken = (v: string) => {
+  const t = v.trim().toLowerCase();
+  return t === 'placeholder' || t === 'unset' || t === 'pending' || t === 'your_key_here';
+};
+
 const required = (name: string): string => {
   const v = optional(name);
   if (!v) throw new Error(`Missing env var: ${name}`);
@@ -14,15 +20,28 @@ const required = (name: string): string => {
 
 export const env = {
   // Booleans for "is this service configured" — used by UI to gracefully degrade.
-  hasStripe: () => !!optional('STRIPE_SECRET_KEY'),
+  hasStripe: () => {
+    const k = optional('STRIPE_SECRET_KEY');
+    return !!k && !isPlaceholderToken(k);
+  },
   hasResend: () => !!optional('RESEND_API_KEY'),
-  hasR2: () =>
-    !!optional('R2_ACCOUNT_ID') &&
-    !!optional('R2_ACCESS_KEY_ID') &&
-    !!optional('R2_SECRET_ACCESS_KEY'),
+  hasR2: () => {
+    const a = optional('R2_ACCOUNT_ID');
+    const ak = optional('R2_ACCESS_KEY_ID');
+    const sk = optional('R2_SECRET_ACCESS_KEY');
+    return (
+      !!a &&
+      !!ak &&
+      !!sk &&
+      !isPlaceholderToken(a) &&
+      !isPlaceholderToken(ak) &&
+      !isPlaceholderToken(sk)
+    );
+  },
 
   stripeSecret: () => required('STRIPE_SECRET_KEY'),
-  stripePublishable: () => required('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'),
+  /** Only needed for future client-side Stripe Elements / embedded checkout. */
+  stripePublishableOptional: () => optional('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'),
   stripeWebhookSecret: () => required('STRIPE_WEBHOOK_SECRET'),
 
   resendApiKey: () => required('RESEND_API_KEY'),

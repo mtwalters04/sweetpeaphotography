@@ -52,6 +52,16 @@ export default async function BookPage() {
     .order('starts_at', { ascending: true })
     .returns<SlotRow[]>();
 
+  let balanceCents = 0;
+  if (user) {
+    const { data: bal } = await supabase
+      .from('credit_balances')
+      .select('balance_cents')
+      .eq('customer_id', user.id)
+      .maybeSingle();
+    balanceCents = bal?.balance_cents ?? 0;
+  }
+
   return (
     <>
       <section className="pt-[clamp(112px,12vw,156px)] pb-[clamp(96px,12vw,192px)]">
@@ -71,7 +81,8 @@ export default async function BookPage() {
             <BookWizard
               slots={(slots ?? []) as SlotRow[]}
               signedIn={!!user}
-              paymentsConfigured={env.hasStripe()}
+              stripeConfigured={env.hasStripe()}
+              balanceCents={balanceCents}
             />
           </div>
         )}

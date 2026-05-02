@@ -16,7 +16,7 @@ export default async function AdminHome() {
     .from('blog_posts')
     .select('*', { count: 'exact', head: true })
     .eq('status', 'published');
-  const { count: portfolioCount } = await (supabase as any)
+  const { count: portfolioCount } = await supabase
     .from('portfolio_collections')
     .select('*', { count: 'exact', head: true })
     .eq('published', true);

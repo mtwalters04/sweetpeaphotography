@@ -44,6 +44,20 @@ export default async function BookSlotPage({
   const depositCents = computeDeposit(slot.price_cents, Number(slot.session_types.deposit_pct));
   const isOpen = slot.status === 'open';
 
+  let balanceCents = 0;
+  if (user) {
+    const { data: bal } = await supabase
+      .from('credit_balances')
+      .select('balance_cents')
+      .eq('customer_id', user.id)
+      .maybeSingle();
+    balanceCents = bal?.balance_cents ?? 0;
+  }
+
+  const stripeConfigured = env.hasStripe();
+  const creditCoversFullDeposit = balanceCents >= depositCents;
+  const canBook = isOpen && (stripeConfigured || creditCoversFullDeposit);
+
   return (
     <>
       <section className="pt-[clamp(112px,12vw,156px)] pb-[clamp(96px,12vw,192px)]">
@@ -106,7 +120,11 @@ export default async function BookSlotPage({
                 <CheckoutButton
                   slotId={slot.id}
                   signedIn={!!user}
-                  paymentsConfigured={env.hasStripe()}
+                  stripeConfigured={stripeConfigured}
+                  canBook={canBook}
+                  creditCoversFullDeposit={creditCoversFullDeposit}
+                  depositCents={depositCents}
+                  balanceCents={balanceCents}
                 />
               ) : (
                 <p className="text-t-14 text-ash italic font-light">

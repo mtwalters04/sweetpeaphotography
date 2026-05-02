@@ -3,15 +3,11 @@ import type Stripe from 'stripe';
 import { getStripe } from '@/lib/stripe';
 import { env } from '@/lib/env';
 import { confirmBooking } from '@/lib/bookings';
-import { sendEmail } from '@/lib/resend';
 import { createAdminClient } from '@/lib/supabase/server';
-import {
-  AdminNewBookingEmail,
-  BookingConfirmedEmail,
-} from '@/lib/emails/templates';
+import { sendBookingConfirmationEmails } from '@/lib/booking-confirmation-email';
+import { ensureCheckoutCreditRedemptionInLedger } from '@/lib/credit-ledger-redemption';
 
 export const runtime = 'nodejs';
-// Stripe needs the raw body for signature verification.
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
@@ -39,6 +35,7 @@ export async function POST(request: NextRequest) {
 
     const amountCents = Number(meta.amount_cents);
     const depositCents = Number(meta.deposit_cents);
+    const creditAppliedCents = Number(meta.credit_applied_cents ?? 0);
 
     let result: { bookingId: string; created: boolean };
     try {
@@ -47,6 +44,7 @@ export async function POST(request: NextRequest) {
         customerId: meta.customer_id,
         amountCents,
         depositCents,
+        creditAppliedCents: Number.isFinite(creditAppliedCents) ? creditAppliedCents : 0,
         stripePaymentIntentId:
           typeof session.payment_intent === 'string' ? session.payment_intent : null,
         stripeCheckoutSessionId: session.id,
@@ -57,74 +55,28 @@ export async function POST(request: NextRequest) {
       return new Response('Internal error', { status: 500 });
     }
 
-    if (result.created) {
-      // Fire confirmation emails. Don't block the webhook on email failures.
+    let bookingId = result.bookingId;
+    if (!result.created) {
       const admin = createAdminClient();
-      const { data: booking } = await admin
+      const { data: row } = await admin
         .from('bookings')
-        .select(`
-          id,
-          starts_at,
-          amount_cents,
-          deposit_cents,
-          profiles:customer_id (full_name, email),
-          session_types (name)
-        `)
-        .eq('id', result.bookingId)
-        .single();
+        .select('id')
+        .eq('stripe_checkout_session_id', session.id)
+        .maybeSingle();
+      if (row?.id) bookingId = row.id;
+    }
 
-      if (booking) {
-        const customerName = booking.profiles?.full_name ?? booking.profiles?.email ?? 'there';
-        const customerEmail = booking.profiles?.email ?? '';
-        const sessionTypeName = booking.session_types?.name ?? 'session';
-        const manageUrl = `${env.siteUrl()}/account/bookings/${booking.id}`;
-        const adminUrl = `${env.siteUrl()}/admin/bookings/${booking.id}`;
+    await ensureCheckoutCreditRedemptionInLedger(bookingId);
 
-        if (customerEmail) {
-          const r1 = await sendEmail({
-            to: customerEmail,
-            subject: 'Your session is on the calendar.',
-            react: BookingConfirmedEmail({
-              customerName,
-              sessionTypeName,
-              startsAt: booking.starts_at,
-              amountCents: booking.amount_cents,
-              depositCents: booking.deposit_cents,
-              manageUrl,
-            }),
-          });
-          await admin.from('email_log').insert({
-            booking_id: booking.id,
-            to_email: customerEmail,
-            subject: 'Your session is on the calendar.',
-            template: 'booking_confirmed',
-            resend_id: r1.id ?? null,
-            error: r1.error ?? null,
-          });
-        }
-
-        const r2 = await sendEmail({
-          to: env.studioNotificationEmail(),
-          subject: `New booking — ${customerName}`,
-          react: AdminNewBookingEmail({
-            customerName,
-            customerEmail,
-            sessionTypeName,
-            startsAt: booking.starts_at,
-            amountCents: booking.amount_cents,
-            depositCents: booking.deposit_cents,
-            adminUrl,
-          }),
-        });
-        await admin.from('email_log').insert({
-          booking_id: booking.id,
-          to_email: env.studioNotificationEmail(),
-          subject: `New booking — ${customerName}`,
-          template: 'admin_new_booking',
-          resend_id: r2.id ?? null,
-          error: r2.error ?? null,
-        });
-      }
+    const adminCheck = createAdminClient();
+    const { data: alreadyConfirmed } = await adminCheck
+      .from('email_log')
+      .select('id')
+      .eq('booking_id', bookingId)
+      .eq('template', 'booking_confirmed')
+      .maybeSingle();
+    if (!alreadyConfirmed) {
+      await sendBookingConfirmationEmails(bookingId);
     }
   }
 

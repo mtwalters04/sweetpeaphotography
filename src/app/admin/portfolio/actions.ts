@@ -22,26 +22,34 @@ function row(fd: FormData) {
   };
 }
 
-export async function createCollection(_prev: State, fd: FormData): Promise<State> {
-  let id: string;
+/** Creates a portfolio collection without redirect — for client-led create + uploads. */
+export async function createPortfolioDraft(fd: FormData): Promise<
+  | { ok: true; id: string }
+  | { ok: false; error: string }
+> {
   try {
     const { supabase } = await requireStaff();
     const r = row(fd);
-    if (!r.title) return { error: 'Title is required.', saved: false };
-    if (!r.slug) return { error: 'Slug is required.', saved: false };
+    if (!r.title) return { ok: false, error: 'Title is required.' };
+    if (!r.slug) return { ok: false, error: 'Slug could not be generated from the title. Add a slug or simplify the title.' };
     const { data, error } = await (supabase as any)
       .from('portfolio_collections')
       .insert(r)
       .select('id')
       .single();
-    if (error) return { error: error.message, saved: false };
-    id = data.id;
+    if (error) return { ok: false, error: error.message };
+    revalidatePath('/admin/portfolio');
+    revalidatePath('/portfolio');
+    return { ok: true, id: data.id };
   } catch (err) {
-    return { error: err instanceof Error ? err.message : 'Unknown error.', saved: false };
+    return { ok: false, error: err instanceof Error ? err.message : 'Unknown error.' };
   }
-  revalidatePath('/admin/portfolio');
-  revalidatePath('/portfolio');
-  redirect(`/admin/portfolio/${id}/edit`);
+}
+
+export async function createCollection(_prev: State, fd: FormData): Promise<State> {
+  const draft = await createPortfolioDraft(fd);
+  if (!draft.ok) return { error: draft.error, saved: false };
+  redirect(`/admin/portfolio/${draft.id}/edit`);
 }
 
 export async function updateCollection(id: string, _prev: State, fd: FormData): Promise<State> {

@@ -5,6 +5,9 @@ import { env } from './env';
 let cached: S3Client | null = null;
 
 function getR2(): S3Client {
+  if (!env.hasR2()) {
+    throw new Error('R2 is not configured');
+  }
   if (cached) return cached;
   cached = new S3Client({
     region: 'auto',

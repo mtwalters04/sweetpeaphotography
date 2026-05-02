@@ -1,27 +1,8 @@
-import { PortfolioForm } from '../PortfolioForm';
-import { createCollection } from '../actions';
+import { env } from '@/lib/env';
+import { PortfolioCreateForm } from '../PortfolioCreateForm';
 
 export const metadata = { title: 'New collection · Admin' };
 
-export default function NewPortfolioPage() {
-  return (
-    <PortfolioForm
-      action={createCollection}
-      submitLabel="Create →"
-      uploadsEnabled={false}
-      coverUrl={null}
-      publicBaseUrl={null}
-      items={[]}
-      collection={{
-        id: null,
-        slug: '',
-        title: '',
-        eyebrow: '',
-        summary: '',
-        cover_image_alt: '',
-        order_index: 0,
-        published: false,
-      }}
-    />
-  );
+export default async function NewPortfolioPage() {
+  return <PortfolioCreateForm uploadsEnabled={env.hasR2()} />;
 }

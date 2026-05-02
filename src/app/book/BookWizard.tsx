@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { formatUsd, computeDeposit } from '@/lib/money';
 import { CheckoutButton } from './[slotId]/CheckoutButton';
 
@@ -33,11 +33,13 @@ function monthLabel(date: Date): string {
 export function BookWizard({
   slots,
   signedIn,
-  paymentsConfigured,
+  stripeConfigured,
+  balanceCents,
 }: {
   slots: WizardSlot[];
   signedIn: boolean;
-  paymentsConfigured: boolean;
+  stripeConfigured: boolean;
+  balanceCents: number;
 }) {
   const [monthCursor, setMonthCursor] = useState(() => {
     const first = slots[0] ? new Date(slots[0].starts_at) : new Date();
@@ -46,6 +48,39 @@ export function BookWizard({
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
+
+  const step2Ref = useRef<HTMLElement>(null);
+  const step3Ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!selectedDay) return;
+    const id = requestAnimationFrame(() => {
+      const reduced =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      step2Ref.current?.scrollIntoView({
+        behavior: reduced ? 'auto' : 'smooth',
+        block: 'center',
+        inline: 'nearest',
+      });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [selectedDay]);
+
+  useEffect(() => {
+    if (!selectedSlotId) return;
+    const id = requestAnimationFrame(() => {
+      const reduced =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      step3Ref.current?.scrollIntoView({
+        behavior: reduced ? 'auto' : 'smooth',
+        block: 'center',
+        inline: 'nearest',
+      });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [selectedSlotId]);
 
   const byDay = useMemo(() => {
     const map = new Map<string, WizardSlot[]>();
@@ -85,29 +120,34 @@ export function BookWizard({
     ? computeDeposit(selectedSlot.price_cents, Number(selectedSlot.session_types.deposit_pct) || 0.3)
     : 0;
 
+  const creditCoversFullDeposit =
+    !!selectedSlot?.session_types && balanceCents >= depositCents && depositCents > 0;
+  const canBookDeposit =
+    !!selectedSlot?.session_types && depositCents > 0 && (stripeConfigured || creditCoversFullDeposit);
+
   return (
     <div className="space-y-12">
       <section className="border border-mist">
         <div className="px-4 py-3 border-b border-mist">
-          <p className="text-ash text-t-12 eyebrow-label">Step 1 · Select a date</p>
-          <p className="text-t-14 text-ash mt-2 font-light">
+          <p className="text-ash text-t-14 eyebrow-label font-medium">Step 1 · Select a date</p>
+          <p className="text-t-16 text-ash mt-2 font-normal">
             Choose a highlighted date to continue through the booking wizard.
           </p>
         </div>
         <div className="flex items-center justify-between px-4 py-3 border-b border-mist">
           <button
             type="button"
-            className="text-t-12 eyebrow-label text-ash hover:text-accent"
+            className="text-t-14 eyebrow-label font-medium text-ash hover:text-accent"
             onClick={() =>
               setMonthCursor(new Date(monthCursor.getFullYear(), monthCursor.getMonth() - 1, 1))
             }
           >
             ← Prev
           </button>
-          <p className="font-serif text-t-22">{monthLabel(monthCursor)}</p>
+          <p className="font-serif text-t-22 font-medium">{monthLabel(monthCursor)}</p>
           <button
             type="button"
-            className="text-t-12 eyebrow-label text-ash hover:text-accent"
+            className="text-t-14 eyebrow-label font-medium text-ash hover:text-accent"
             onClick={() =>
               setMonthCursor(new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 1))
             }
@@ -115,16 +155,17 @@ export function BookWizard({
             Next →
           </button>
         </div>
-        <div className="grid grid-cols-7 border-b border-mist text-center text-t-12 text-ash">
+        <div className="grid grid-cols-7 border-b border-mist text-center text-t-14 text-ash font-medium">
           {DAY_NAMES.map((name) => (
-            <div key={name} className="py-2 border-r border-mist last:border-r-0">
+            <div key={name} className="py-2.5 border-r border-mist last:border-r-0">
               {name}
             </div>
           ))}
         </div>
         <div className="grid grid-cols-7">
           {calendarDays.map((cell) => {
-            if (!cell.date) return <div key={cell.key} className="h-16 border-r border-b border-mist/60" />;
+            if (!cell.date)
+              return <div key={cell.key} className="min-h-[4.5rem] border-r border-b border-mist/60" />;
             const key = toDateInput(cell.date);
             const available = byDay.get(key)?.length ?? 0;
             const selected = selectedDay === key;
@@ -148,17 +189,19 @@ export function BookWizard({
                   setSelectedSlotId(null);
                   setConfirmed(false);
                 }}
-                className={`h-16 border-r border-b border-mist/60 px-2 text-left transition-colors ${
+                className={`min-h-[4.5rem] border-r border-b border-mist/60 px-2.5 py-1.5 text-left transition-colors ${
                   selected
                     ? 'bg-ink text-bone'
                     : available
                       ? 'bg-mist/50 hover:bg-mist'
-                      : 'text-ash/40 cursor-not-allowed'
+                      : 'bg-mist/20 text-ash/55 cursor-not-allowed'
                 }`}
               >
-                <span className="block text-t-14">{cell.date.getDate()}</span>
+                <span className="block text-t-16 font-medium tabular-nums">{cell.date.getDate()}</span>
                 {available ? (
-                  <span className={`block text-[11px] ${selected ? 'text-bone/80' : 'text-ash'}`}>
+                  <span
+                    className={`block text-t-12 mt-0.5 font-medium ${selected ? 'text-bone/85' : 'text-ash'}`}
+                  >
                     {available} time{available === 1 ? '' : 's'}
                   </span>
                 ) : null}
@@ -169,10 +212,10 @@ export function BookWizard({
       </section>
 
       {selectedDay ? (
-        <section className="border border-mist">
+        <section ref={step2Ref} className="border border-mist scroll-mt-28">
           <div className="px-4 py-3 border-b border-mist">
-            <p className="text-ash text-t-12 eyebrow-label">Step 2 · Choose a time</p>
-            <p className="font-serif text-t-22 mt-2">
+            <p className="text-ash text-t-14 eyebrow-label font-medium">Step 2 · Choose a time</p>
+            <p className="font-serif text-t-22 mt-2 font-medium">
               {new Date(`${selectedDay}T00:00:00`).toLocaleDateString('en-US', {
                 weekday: 'long',
                 month: 'long',
@@ -180,7 +223,7 @@ export function BookWizard({
                 year: 'numeric',
               })}
             </p>
-            <p className="text-t-14 text-ash mt-2">
+            <p className="text-t-16 text-ash mt-2 font-normal">
               {daySlots[0]?.session_types?.name ?? 'Session'} · {daySlots.length} time
               {daySlots.length === 1 ? '' : 's'} available
             </p>
@@ -206,10 +249,10 @@ export function BookWizard({
                         minute: '2-digit',
                       })}
                     </p>
-                    <p className="col-span-6 md:col-span-3 text-t-14 text-ash font-light">
+                    <p className="col-span-6 md:col-span-3 text-t-16 text-ash font-normal">
                       {slot.duration_minutes} minutes
                     </p>
-                    <p className="col-span-6 md:col-span-3 text-t-14 text-ash font-light">
+                    <p className="col-span-6 md:col-span-3 text-t-16 text-ash font-normal">
                       {slot.location_label ?? 'On-location'}
                     </p>
                     <p className="col-span-6 md:col-span-3 font-serif text-t-22 text-right md:text-left">
@@ -224,11 +267,11 @@ export function BookWizard({
       ) : null}
 
       {selectedSlot ? (
-        <section className="border border-mist">
+        <section ref={step3Ref} className="border border-mist scroll-mt-28">
           <div className="px-4 py-3 border-b border-mist">
-            <p className="text-ash text-t-12 eyebrow-label">Step 3 · Review session details</p>
-            <p className="font-serif text-t-28 mt-3">{selectedSlot.session_types?.name}</p>
-            <p className="text-t-14 text-ash mt-2 font-light">
+            <p className="text-ash text-t-14 eyebrow-label font-medium">Step 3 · Review session details</p>
+            <p className="font-serif text-t-28 mt-3 font-medium">{selectedSlot.session_types?.name}</p>
+            <p className="text-t-16 text-ash mt-2 font-normal">
               {new Date(selectedSlot.starts_at).toLocaleDateString('en-US', {
                 weekday: 'long',
                 month: 'long',
@@ -245,7 +288,7 @@ export function BookWizard({
           <div className="grid grid-cols-12 gap-8 px-4 py-6">
             <div className="col-span-12 md:col-span-8 space-y-4">
               {selectedSlot.session_types?.summary ? (
-                <p className="text-t-16 text-ash font-light">{selectedSlot.session_types.summary}</p>
+                <p className="text-t-16 text-ash font-normal">{selectedSlot.session_types.summary}</p>
               ) : null}
               {selectedSlot.session_types?.description ? (
                 <p className="font-serif text-t-22 leading-relaxed">{selectedSlot.session_types.description}</p>
@@ -257,7 +300,7 @@ export function BookWizard({
             <aside className="col-span-12 md:col-span-4 border-t border-mist pt-5 md:border-t-0 md:border-l md:pl-6 md:pt-0">
               <p className="text-t-12 eyebrow-label text-ash">Deposit due now</p>
               <p className="font-serif text-t-36 mt-2">{formatUsd(depositCents)}</p>
-              <p className="text-t-14 text-ash font-light mt-2">
+              <p className="text-t-16 text-ash font-normal mt-2">
                 30% deposit confirms your date. Remaining balance is due on session day.
               </p>
               <label className="flex items-start gap-2 mt-5 text-t-14 text-ash">
@@ -273,7 +316,11 @@ export function BookWizard({
                 <CheckoutButton
                   slotId={selectedSlot.id}
                   signedIn={signedIn}
-                  paymentsConfigured={paymentsConfigured}
+                  stripeConfigured={stripeConfigured}
+                  canBook={canBookDeposit}
+                  creditCoversFullDeposit={creditCoversFullDeposit}
+                  depositCents={depositCents}
+                  balanceCents={balanceCents}
                 />
               </div>
               {!confirmed ? (

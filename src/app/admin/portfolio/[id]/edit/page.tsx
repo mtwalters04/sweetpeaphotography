@@ -29,10 +29,21 @@ type ItemRow = {
 
 export default async function EditPortfolioPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ upload_notice?: string }>;
 }) {
   const { id } = await params;
+  const sp = await searchParams;
+  let uploadNotice: string | null = null;
+  if (typeof sp.upload_notice === 'string' && sp.upload_notice.length > 0) {
+    try {
+      uploadNotice = decodeURIComponent(sp.upload_notice);
+    } catch {
+      uploadNotice = sp.upload_notice;
+    }
+  }
   const supabase = await createClient();
   const { data: c } = await (supabase as any).from('portfolio_collections').select('*').eq('id', id).single();
   if (!c) notFound();
@@ -53,6 +64,7 @@ export default async function EditPortfolioPage({
     <PortfolioForm
       action={bound}
       submitLabel="Save changes →"
+      uploadNotice={uploadNotice}
       uploadsEnabled={env.hasR2()}
       coverUrl={collection.cover_image_key ? publicUrl(collection.cover_image_key) : null}
       publicBaseUrl={env.r2PublicBaseUrl() ?? null}

@@ -56,7 +56,7 @@ export function CrmForm({
         defaultValue={data.internal_notes}
         textarea
       />
-      {state.error && <p className="text-t-14 text-red-700">{state.error}</p>}
+      {state.error && <p role="alert" className="text-t-14 text-red-700">{state.error}</p>}
       {state.saved && <p className="text-t-14 text-ink">Saved.</p>}
       <button
         type="submit"
@@ -80,7 +80,7 @@ export function IssueCreditForm({ customerId }: { customerId: string }) {
     <form action={formAction} className="space-y-4">
       <SimpleField label="Amount (USD)" name="amount_dollars" type="number" required />
       <SimpleField label="Reason / notes" name="notes" textarea />
-      {state.error && <p className="text-t-14 text-red-700">{state.error}</p>}
+      {state.error && <p role="alert" className="text-t-14 text-red-700">{state.error}</p>}
       {state.saved && <p className="text-t-14 text-ink">Issued.</p>}
       <button
         type="submit"

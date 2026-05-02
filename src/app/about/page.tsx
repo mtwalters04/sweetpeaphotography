@@ -28,20 +28,7 @@ const PHOTOGRAPHERS = [
 export default function About() {
   return (
     <>
-      <header className="pt-[clamp(160px,22vw,288px)] pb-[clamp(72px,10vw,144px)]">
-        <div className="max-w-content mx-auto px-6 grid grid-cols-12 gap-6">
-          <div className="col-span-12 md:col-span-9">
-            <SectionEyebrow number="—" label="The studio" />
-            <h1 className="font-serif text-[clamp(2.75rem,7vw,5.5rem)] leading-[0.98] tracking-[-0.02em] mt-10">
-              Two photographers.
-              <br />
-              <span className="italic font-light">The same patient eye.</span>
-            </h1>
-          </div>
-        </div>
-      </header>
-
-      <section className="pb-[clamp(96px,14vw,192px)]">
+      <section className="pt-[clamp(112px,12vw,156px)] pb-[clamp(96px,14vw,192px)]">
         <div className="max-w-content mx-auto px-6 grid grid-cols-12 gap-6">
           <div className="col-span-12 md:col-span-8 md:col-start-3">
             <p className="font-serif text-[clamp(1.5rem,3vw,2.25rem)] leading-[1.35] max-w-prose">
@@ -66,22 +53,32 @@ export default function About() {
       </section>
 
       <section className="pb-[clamp(96px,14vw,192px)] border-t border-mist pt-[clamp(72px,10vw,144px)]">
-        <div className="max-w-content mx-auto px-6 mb-16">
+        <div className="max-w-content mx-auto px-6 mb-14">
           <SectionEyebrow number="01" label="Behind the camera" />
         </div>
-        <div className="max-w-content mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-24">
+        <div className="max-w-content mx-auto px-6 space-y-20 md:space-y-24">
           {PHOTOGRAPHERS.map((p, i) => (
-            <article key={p.seed} className={`flex flex-col ${i === 1 ? 'md:mt-32' : ''}`}>
-              <div className="relative aspect-[4/5] bg-mist overflow-hidden">
-                <Image
-                  src={placeholderSrc(p.seed, 1200, 1500)}
-                  alt={`Portrait of ${p.name}`}
-                  fill
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                  className="object-cover"
-                />
+            <article key={p.seed} className="grid grid-cols-12 gap-8 md:gap-12 items-center">
+              <div
+                className={`col-span-12 md:col-span-5 ${
+                  i % 2 === 0 ? 'md:col-start-1' : 'md:col-start-8'
+                }`}
+              >
+                <div className="relative aspect-[4/5] bg-mist overflow-hidden">
+                  <Image
+                    src={placeholderSrc(p.seed, 1200, 1500)}
+                    alt={`Portrait of ${p.name}`}
+                    fill
+                    sizes="(min-width: 768px) 42vw, 100vw"
+                    className="object-cover"
+                  />
+                </div>
               </div>
-              <div className="mt-10">
+              <div
+                className={`col-span-12 md:col-span-5 ${
+                  i % 2 === 0 ? 'md:col-start-7' : 'md:col-start-1 md:row-start-1'
+                }`}
+              >
                 <p className="text-ash text-t-12 uppercase tracking-[0.22em] mb-3">{p.role}</p>
                 <h2 className="font-serif text-[clamp(2rem,3.5vw,2.75rem)] leading-tight tracking-[-0.01em]">
                   {p.name}

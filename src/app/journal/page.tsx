@@ -24,16 +24,7 @@ export default async function JournalIndex() {
 
   return (
     <>
-      <header className="pt-[clamp(128px,18vw,224px)] pb-[clamp(64px,8vw,128px)]">
-        <div className="max-w-content mx-auto px-6">
-          <p className="text-ash text-t-12 uppercase tracking-[0.2em] mb-6">Journal</p>
-          <h1 className="font-serif text-t-48 md:text-t-64 max-w-3xl leading-[1.05]">
-            Field notes from the studio.
-          </h1>
-        </div>
-      </header>
-
-      <section className="pb-[clamp(96px,12vw,192px)]">
+      <section className="pt-[clamp(112px,12vw,156px)] pb-[clamp(96px,12vw,192px)]">
         {posts && posts.length > 0 ? (
           <ul className="max-w-content mx-auto px-6 divide-y divide-mist border-y border-mist">
             {posts.map((post) => (

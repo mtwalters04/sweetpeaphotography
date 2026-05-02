@@ -111,7 +111,11 @@ export function Select({
 
 export function FormError({ message }: { message: string | null }) {
   if (!message) return null;
-  return <p className="text-t-14 text-red-700">{message}</p>;
+  return (
+    <p role="alert" className="text-t-14 text-red-700">
+      {message}
+    </p>
+  );
 }
 
 export function FormSaved({ visible }: { visible: boolean }) {

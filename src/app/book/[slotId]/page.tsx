@@ -5,7 +5,6 @@ import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { fmtDateAndTime } from '@/lib/dates';
 import { formatUsd, computeDeposit } from '@/lib/money';
 import { env } from '@/lib/env';
-import { SectionEyebrow } from '@/components/section-eyebrow';
 import { CheckoutButton } from './CheckoutButton';
 
 export const metadata: Metadata = {
@@ -47,36 +46,23 @@ export default async function BookSlotPage({
 
   return (
     <>
-      <header className="pt-[clamp(160px,22vw,288px)] pb-[clamp(56px,8vw,112px)]">
-        <div className="max-w-content mx-auto px-6 grid grid-cols-12 gap-6">
-          <div className="col-span-12 md:col-span-8">
-            <Link
-              href="/book"
-              className="text-ash text-t-12 eyebrow-label hover:text-accent transition-colors"
-            >
-              ← All available dates
-            </Link>
-            <p className="text-ash text-t-12 eyebrow-label mt-12 mb-4">
-              {slot.session_types.eyebrow ?? slot.session_types.name}
-            </p>
-            <h1 className="font-serif text-[clamp(2.5rem,6vw,4.5rem)] leading-[1] tracking-[-0.02em]">
-              {slot.session_types.name}
-            </h1>
-            <p className="font-serif text-t-22 italic font-light text-ash mt-6">
-              {fmtDateAndTime(slot.starts_at)}
-            </p>
-            {slot.session_types.summary && (
-              <p className="text-t-22 text-ash mt-10 max-w-prose font-light leading-relaxed">
-                {slot.session_types.summary}
-              </p>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <section className="pb-[clamp(96px,12vw,192px)]">
+      <section className="pt-[clamp(112px,12vw,156px)] pb-[clamp(96px,12vw,192px)]">
         <div className="max-w-content mx-auto px-6 grid grid-cols-12 gap-12">
           <div className="col-span-12 md:col-span-7 space-y-10">
+            <div>
+              <Link
+                href="/book"
+                className="text-ash text-t-12 eyebrow-label hover:text-accent transition-colors"
+              >
+                ← All available dates
+              </Link>
+              <p className="text-ash text-t-12 eyebrow-label mt-8 mb-3">
+                {slot.session_types.eyebrow ?? slot.session_types.name}
+              </p>
+              <p className="font-serif text-[clamp(1.6rem,3.2vw,2.3rem)] leading-tight tracking-[-0.01em]">
+                {fmtDateAndTime(slot.starts_at)}
+              </p>
+            </div>
             {slot.session_types.description && (
               <div>
                 <p className="text-ash text-t-12 eyebrow-label mb-4">The session</p>

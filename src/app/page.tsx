@@ -1,27 +1,26 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { PORTFOLIO } from '@/lib/content/portfolio';
+import { getPortfolioCollections, type PortfolioCollection } from '@/lib/content/portfolio';
 import { SERVICES } from '@/lib/content/services';
 import { TESTIMONIALS } from '@/lib/content/testimonials';
 import { STUDIO } from '@/lib/content/studio';
-import { placeholderSrc } from '@/lib/placeholder';
 import { CtaLink } from '@/components/cta-link';
 import { SectionEyebrow } from '@/components/section-eyebrow';
+import { TestimonialCarousel } from '@/components/testimonial-carousel';
 
-const featured = PORTFOLIO.slice(0, 5);
-const featuredTestimonial = TESTIMONIALS[0]!;
 const featuredServices = SERVICES.slice(0, 4);
 
 const formatPrice = (n: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 
-export default function Home() {
+export default async function Home() {
+  const featured = (await getPortfolioCollections()).slice(0, 6);
   return (
     <>
       {/* HERO — desktop: text panel + right-side image blend for readability */}
       <section className="relative min-h-[96svh] w-full overflow-hidden bg-bone">
         <Image
-          src="/images/hero-home-estate.png"
+          src="/images/hero-home-estate.jpg"
           alt="Historic riverside estate at golden hour with moss-draped oaks and a columned porch"
           fill
           priority
@@ -46,7 +45,7 @@ export default function Home() {
         />
         <div className="relative z-10 h-full min-h-[96svh] px-6 md:px-[clamp(40px,6vw,108px)] flex flex-col">
           <div className="flex-1 min-h-[16svh] md:min-h-[14svh]" />
-          <div className="pb-[clamp(42px,7vw,96px)] md:max-w-[48rem]">
+          <div className="pb-[clamp(42px,7vw,96px)] md:max-w-[56rem]">
             <div className="rounded-sm bg-bone/18 backdrop-blur-[1.5px] px-4 py-4 md:bg-transparent md:backdrop-blur-0 md:px-0 md:py-0">
             <p className="text-bone/95 md:text-ash/95 text-t-12 mb-8 font-normal eyebrow-label">
               {STUDIO.name} · est. quietly
@@ -72,7 +71,7 @@ export default function Home() {
               <CtaLink href="/book" variant="primary">
                 See available dates
               </CtaLink>
-              <CtaLink href="/contact" variant="secondary">
+              <CtaLink href="/contact" variant="primary">
                 Request a custom date
               </CtaLink>
             </div>
@@ -81,7 +80,7 @@ export default function Home() {
 
             <div className="mt-10 border border-mist/80 bg-bone/86 backdrop-blur-[2px] p-5 md:p-6">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
-                <div className="md:col-span-5">
+                <div className="md:col-span-4">
                   <p className="text-t-12 text-ash/95 eyebrow-label mb-3">Start here</p>
                   <h2 className="font-serif text-[clamp(1.45rem,2.7vw,2.2rem)] leading-[1.15] text-wrap-balance">
                     Choose your path,
@@ -89,23 +88,23 @@ export default function Home() {
                     <span className="italic font-light">book in minutes.</span>
                   </h2>
                 </div>
-                <div className="md:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <article className="border border-mist bg-bone p-4">
-                    <p className="text-t-12 text-ash/90 eyebrow-label mb-3">Fastest route</p>
-                    <p className="font-serif text-[clamp(1.15rem,1.6vw,1.35rem)] leading-tight">
-                      Book an available date
+                <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <article className="border border-mist bg-bone p-5 md:p-6 min-h-[220px] flex flex-col">
+                    <p className="text-t-12 text-ash/90 eyebrow-label mb-3">Fast route</p>
+                    <p className="font-serif text-[clamp(1.18rem,1.55vw,1.38rem)] leading-tight min-h-[2.2em]">
+                      Book open dates
                     </p>
-                    <p className="text-t-14 text-ash/95 mt-3 leading-relaxed">
-                      Open sessions, instant deposit, confirmed booking.
+                    <p className="text-t-16 text-ash/95 mt-4 leading-relaxed text-wrap-pretty">
+                      Choose a published slot, place the deposit, and your date is confirmed.
                     </p>
                   </article>
-                  <article className="border border-mist bg-bone p-4">
+                  <article className="border border-mist bg-bone p-5 md:p-6 min-h-[220px] flex flex-col">
                     <p className="text-t-12 text-ash/90 eyebrow-label mb-3">Need flexibility</p>
-                    <p className="font-serif text-[clamp(1.15rem,1.6vw,1.35rem)] leading-tight">
-                      Request a custom date
+                    <p className="font-serif text-[clamp(1.18rem,1.55vw,1.38rem)] leading-tight min-h-[2.2em] md:whitespace-nowrap">
+                      Custom date request
                     </p>
-                    <p className="text-t-14 text-ash/95 mt-3 leading-relaxed">
-                      Share your preferred date and details for a tailored quote.
+                    <p className="text-t-16 text-ash/95 mt-4 leading-relaxed text-wrap-pretty">
+                      Share your timing and session details, and we will send a tailored quote.
                     </p>
                   </article>
                 </div>
@@ -125,8 +124,8 @@ export default function Home() {
               The work up front — <span className="italic font-light">then the calendar.</span>
             </h2>
             <p className="text-t-16 text-ash mt-6 max-w-prose font-light leading-relaxed text-wrap-pretty">
-              Browse collections as you would a wall in the studio. When the fit feels right, we
-              hold the date with a deposit.
+              Explore recent collections, then choose a date that matches your pace. We confirm
+              every booking with a simple deposit.
             </p>
           </div>
           <div className="col-span-12 lg:col-span-3 lg:col-start-10 lg:text-right flex flex-wrap gap-x-10 gap-y-4 items-center lg:justify-end">
@@ -137,65 +136,41 @@ export default function Home() {
         </div>
 
         <div className="max-w-content mx-auto px-6 grid grid-cols-12 gap-x-6 gap-y-[clamp(40px,5vw,88px)]">
-          <PortfolioCard
-            collection={featured[0]!}
-            spanClass="col-span-12 lg:col-span-7"
-            offsetClass=""
-            aspect="aspect-[4/5]"
-            sizes="(min-width: 1024px) 55vw, (min-width: 768px) 58vw, 100vw"
-          />
+          {featured.map((collection, idx) => (
+            <PortfolioCard
+              key={collection.id}
+              collection={collection}
+              spanClass={
+                idx % 3 === 0
+                  ? 'col-span-12 md:col-span-7'
+                  : idx % 3 === 1
+                    ? 'col-span-12 md:col-span-5'
+                    : 'col-span-12 md:col-span-6'
+              }
+              offsetClass={idx % 4 === 1 ? 'md:mt-12' : idx % 4 === 3 ? 'md:mt-20' : ''}
+              aspect={
+                collection.cover.orientation === 'portrait'
+                  ? 'aspect-[4/5]'
+                  : collection.cover.orientation === 'square'
+                    ? 'aspect-square'
+                    : 'aspect-[3/2]'
+              }
+              sizes="(min-width: 1024px) 50vw, (min-width: 768px) 50vw, 100vw"
+            />
+          ))}
 
-          <aside className="col-span-12 lg:col-span-4 lg:col-start-9 flex flex-col justify-between gap-10 border border-mist bg-vellum/45 p-8 md:p-10 lg:min-h-[280px]">
-            <div>
-              <p className="text-ash text-t-12 eyebrow-label mb-6">From a recent client</p>
-              <blockquote className="font-serif text-[clamp(1.2rem,2.1vw,1.55rem)] leading-[1.38] text-ink tracking-[-0.01em] font-light">
-                <span className="text-ash/70 not-italic">“</span>
-                {featuredTestimonial.quote}
-                <span className="text-ash/70 not-italic">”</span>
-              </blockquote>
-              <p className="text-t-14 text-ash mt-8 leading-relaxed">
-                <span className="font-serif italic text-ash/70 mr-2">—</span>
-                {featuredTestimonial.attribution}
-                <span className="text-ash/45 mx-2">·</span>
-                <span className="text-ash/85">{featuredTestimonial.context}</span>
-              </p>
-            </div>
-            <div className="flex flex-col gap-5 pt-6 border-t border-mist/90">
-              <CtaLink href="/book">See available dates</CtaLink>
-              <CtaLink href="/contact" variant="secondary">
-                Request a custom date
-              </CtaLink>
+          <aside className="col-span-12 lg:col-span-4 lg:col-start-9 flex flex-col gap-6">
+            <TestimonialCarousel testimonials={TESTIMONIALS} />
+            <div className="border border-mist bg-vellum/35 p-6 md:p-7">
+              <p className="text-ash text-t-12 eyebrow-label mb-4">Ready to begin</p>
+              <div className="flex flex-col gap-4">
+                <CtaLink href="/book">See available dates</CtaLink>
+                <CtaLink href="/contact" variant="secondary">
+                  Request a custom date
+                </CtaLink>
+              </div>
             </div>
           </aside>
-
-          <PortfolioCard
-            collection={featured[1]!}
-            spanClass="col-span-12 md:col-span-5"
-            offsetClass="lg:col-start-1"
-            aspect="aspect-[4/5]"
-            sizes="(min-width: 768px) 42vw, 100vw"
-          />
-          <PortfolioCard
-            collection={featured[2]!}
-            spanClass="col-span-12 md:col-span-6 md:col-start-7"
-            offsetClass="md:mt-14 lg:mt-20"
-            aspect="aspect-[3/4]"
-            sizes="(min-width: 768px) 50vw, 100vw"
-          />
-          <PortfolioCard
-            collection={featured[3]!}
-            spanClass="col-span-12 md:col-span-7"
-            offsetClass="md:col-start-1"
-            aspect="aspect-[4/3]"
-            sizes="(min-width: 768px) 58vw, 100vw"
-          />
-          <PortfolioCard
-            collection={featured[4]!}
-            spanClass="col-span-12 md:col-span-4 md:col-start-9"
-            offsetClass="md:mt-12 lg:mt-16"
-            aspect="aspect-[3/2]"
-            sizes="(min-width: 768px) 33vw, 100vw"
-          />
         </div>
       </section>
 
@@ -297,7 +272,7 @@ function PortfolioCard({
   aspect,
   sizes,
 }: {
-  collection: (typeof PORTFOLIO)[number];
+  collection: PortfolioCollection;
   spanClass: string;
   offsetClass: string;
   aspect: string;
@@ -310,7 +285,7 @@ function PortfolioCard({
     >
       <div className={`relative ${aspect} bg-mist overflow-hidden`}>
         <Image
-          src={placeholderSrc(collection.cover.seed, 1400, 1750)}
+          src={collection.cover.src}
           alt={collection.cover.alt}
           fill
           sizes={sizes}

@@ -7,8 +7,9 @@
   --bone: #f3eee8;
   --vellum: #ebe3d8;
   --mist: #e4dcd3;
-  /* Slightly cool-neutral gray for secondary type — reads “gallery wall,” not SaaS */
-  --ash: #6e6862;
+  /* Slightly cool-neutral gray for secondary type — reads “gallery wall,” not SaaS.
+     Darkened from #6e6862 (≈4.4:1 on bone) to clear WCAG AA for body copy. */
+  --ash: #5a544f;
   --accent: #7d6352;
   --shadow: rgba(24, 22, 20, 0.07);
 }
@@ -60,4 +61,21 @@ h1, h2, h3, h4, h5, h6 {
    masthead. The component already applies italic; this keeps the fallback. */
 .not-italic-fallback {
   font-style: italic;
+}
+
+/* Respect prefers-reduced-motion globally — kill animations, transitions,
+   and the small hover transforms used on portfolio/cards. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .group:hover img,
+  .group-hover\:scale-\[1\.015\],
+  .hover\:scale-105,
+  .hover\:scale-\[1\.015\] {
+    transform: none !important;
+  }
 }

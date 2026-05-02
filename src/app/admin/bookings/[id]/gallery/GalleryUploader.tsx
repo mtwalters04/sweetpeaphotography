@@ -136,7 +136,7 @@ export function GalleryUploader({
                 {progress.name} — {progress.pct}%
               </p>
             )}
-            {error && <p className="text-t-14 text-red-700">{error}</p>}
+            {error && <p role="alert" className="text-t-14 text-red-700">{error}</p>}
           </div>
         ) : (
           <p className="text-t-12 text-ash italic font-light">

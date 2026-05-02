@@ -6,16 +6,18 @@ import { submitCustomRequest, type RequestState } from './actions';
 
 const initial: RequestState = { error: null, ok: false, needsAccount: false };
 
-export type ServiceOption = { value: string; label: string };
-
 export function ContactForm({
   signedIn,
   uploadsEnabled,
-  services,
+  initialContact,
 }: {
   signedIn: boolean;
   uploadsEnabled: boolean;
-  services: readonly ServiceOption[];
+  initialContact: {
+    fullName: string;
+    email: string;
+    phone: string;
+  };
 }) {
   const [state, action, pending] = useActionState(submitCustomRequest, initial);
   const [uploadedKeys, setUploadedKeys] = useState<{ name: string; key: string }[]>([]);
@@ -100,10 +102,11 @@ export function ContactForm({
   }
 
   return (
-    <form action={action} className="space-y-10">
+    <form action={action} className="space-y-8">
       {!signedIn && (
-        <div className="border border-mist p-4 bg-vellum/30 text-t-14 text-ash font-light">
-          You will be asked to sign in or create an account before submitting.
+        <div className="border border-mist bg-vellum/40 px-5 py-4 text-t-14 text-ash font-light leading-relaxed">
+          You can write your question first. We will ask you to sign in before final submit so your
+          inquiry stays tied to your account history.
         </div>
       )}
 
@@ -113,44 +116,57 @@ export function ContactForm({
         value={JSON.stringify(uploadedKeys.map((u) => u.key))}
       />
 
-      <Field label="Preferred date" name="date" type="date" />
-      <Field label="Preferred time" name="time" type="time" />
-
-      <SelectField
-        label="Type of session"
-        name="service"
-        options={[...services, { value: '', label: 'Something else' }]}
-      />
-
-      <SelectField
-        label="Photographer preference"
-        name="photographer_pref"
-        defaultValue="either"
-        options={[
-          { value: 'either', label: 'Either / both' },
-          { value: 'a', label: 'Photographer A' },
-          { value: 'b', label: 'Photographer B' },
-          { value: 'none', label: 'No preference' },
-        ]}
-      />
-
-      <Field label="Location (optional)" name="location" />
-
-      <div>
-        <label
-          htmlFor="message"
-          className="block text-ash text-t-12 eyebrow-label mb-4"
-        >
-          What would you like us to know?
-        </label>
-        <textarea
-          id="message"
-          name="message"
-          rows={6}
+      <section className="border border-mist bg-vellum/35 p-6 md:p-8 space-y-5">
+        <p className="eyebrow-label text-t-12 text-ash">Contact details</p>
+        <Field
+          label="Full name"
+          name="contact_name"
+          defaultValue={initialContact.fullName}
           required
-          className="w-full bg-transparent border-b border-ink/30 focus:border-ink py-4 text-t-16 outline-none resize-none font-light"
+          autoComplete="name"
         />
-      </div>
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <Field
+            label="Email"
+            name="contact_email"
+            type="email"
+            defaultValue={initialContact.email}
+            autoComplete="email"
+          />
+          <Field
+            label="Phone number"
+            name="contact_phone"
+            type="tel"
+            defaultValue={initialContact.phone}
+            autoComplete="tel"
+          />
+        </div>
+        <p className="text-t-12 text-ash font-light">
+          Please provide at least one: email or phone. Both is preferred.
+        </p>
+      </section>
+
+      <section className="border border-mist bg-bone/60 p-6 md:p-8 space-y-5">
+        <p className="eyebrow-label text-t-12 text-ash">Your question</p>
+        <div>
+          <label
+            htmlFor="message"
+            className="block text-ash text-t-14 tracking-[0.01em] mb-2"
+          >
+            What can we help you with?
+          </label>
+          <p className="text-t-14 text-ash font-light mb-4">
+            Ask anything. Share as much detail as you can so we can respond clearly.
+          </p>
+          <textarea
+            id="message"
+            name="message"
+            rows={7}
+            required
+            className="w-full bg-transparent border border-ink/25 focus:border-ink px-4 py-3 text-t-16 outline-none resize-y font-light leading-relaxed"
+          />
+        </div>
+      </section>
 
       <div>
         <label className="block text-ash text-t-12 eyebrow-label mb-4">
@@ -164,10 +180,10 @@ export function ContactForm({
               multiple
               accept="image/jpeg,image/png,image/webp,image/heic"
               onChange={(e) => handleFiles(e.target.files)}
-              className="text-t-14 font-light"
+              className="text-t-14 font-light w-full border border-mist bg-vellum/20 px-4 py-3"
             />
             {uploadingError && (
-              <p className="text-t-14 text-red-700 mt-2">{uploadingError}</p>
+              <p role="alert" className="text-t-14 text-red-700 mt-2">{uploadingError}</p>
             )}
             {uploadedKeys.length > 0 && (
               <ul className="mt-3 text-t-12 text-ash space-y-1">
@@ -184,14 +200,14 @@ export function ContactForm({
         )}
       </div>
 
-      {state.error && <p className="text-t-14 text-red-700">{state.error}</p>}
+      {state.error && <p role="alert" className="text-t-14 text-red-700">{state.error}</p>}
 
       <button
         type="submit"
         disabled={pending}
         className="text-t-12 eyebrow-label text-ink border-b border-ink pb-1 hover:text-accent hover:border-accent transition-colors duration-500 disabled:opacity-50"
       >
-        {pending ? 'Sending…' : 'Send request →'}
+        {pending ? 'Sending…' : 'Send message →'}
       </button>
     </form>
   );
@@ -202,15 +218,19 @@ function Field({
   name,
   type = 'text',
   defaultValue,
+  required = false,
+  autoComplete,
 }: {
   label: string;
   name: string;
   type?: string;
   defaultValue?: string;
+  required?: boolean;
+  autoComplete?: string;
 }) {
   return (
     <div>
-      <label htmlFor={name} className="block text-ash text-t-12 eyebrow-label mb-4">
+      <label htmlFor={name} className="block text-ash text-t-14 tracking-[0.01em] mb-2">
         {label}
       </label>
       <input
@@ -218,41 +238,10 @@ function Field({
         name={name}
         type={type}
         defaultValue={defaultValue}
-        className="w-full bg-transparent border-b border-ink/30 focus:border-ink py-4 text-t-16 outline-none font-light"
+        required={required}
+        autoComplete={autoComplete}
+        className="w-full bg-transparent border border-ink/25 focus:border-ink px-4 py-3 text-t-16 outline-none font-light"
       />
-    </div>
-  );
-}
-
-function SelectField({
-  label,
-  name,
-  defaultValue,
-  options,
-}: {
-  label: string;
-  name: string;
-  defaultValue?: string;
-  options: readonly { value: string; label: string }[];
-}) {
-  return (
-    <div>
-      <label htmlFor={name} className="block text-ash text-t-12 eyebrow-label mb-4">
-        {label}
-      </label>
-      <select
-        id={name}
-        name={name}
-        defaultValue={defaultValue ?? ''}
-        className="w-full bg-transparent border-b border-ink/30 focus:border-ink py-4 text-t-16 outline-none font-light"
-      >
-        <option value="">Select…</option>
-        {options.map((o) => (
-          <option key={o.value || o.label} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
     </div>
   );
 }

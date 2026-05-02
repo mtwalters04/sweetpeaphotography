@@ -38,20 +38,18 @@ export default async function TagArchive({
 
   return (
     <>
-      <header className="pt-[clamp(128px,18vw,224px)] pb-[clamp(64px,8vw,128px)]">
-        <div className="max-w-content mx-auto px-6">
-          <Link
-            href="/journal"
-            className="text-ash text-t-12 uppercase tracking-[0.2em] hover:text-accent transition-colors"
-          >
-            ← Journal
-          </Link>
-          <p className="text-ash text-t-12 uppercase tracking-[0.2em] mt-12 mb-6">Tag</p>
-          <h1 className="font-serif text-t-48 md:text-t-64 leading-[1.05]">{tag}</h1>
-        </div>
-      </header>
-
-      <section className="pb-[clamp(96px,12vw,192px)]">
+      <section className="pt-[clamp(112px,12vw,156px)] pb-[clamp(96px,12vw,192px)]">
+        {posts && posts.length > 0 ? (
+          <div className="max-w-content mx-auto px-6 mb-8 md:mb-10 flex flex-wrap items-center justify-between gap-4">
+            <Link
+              href="/journal"
+              className="text-ash text-t-12 uppercase tracking-[0.2em] hover:text-accent transition-colors"
+            >
+              ← Journal
+            </Link>
+            <p className="text-ash text-t-12 uppercase tracking-[0.2em]">Tag: {tag}</p>
+          </div>
+        ) : null}
         {posts && posts.length > 0 ? (
           <ul className="max-w-content mx-auto px-6 divide-y divide-mist border-y border-mist">
             {posts.map((post) => (

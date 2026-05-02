@@ -41,13 +41,13 @@ export function LoginForms({ next }: { next: string }) {
             autoComplete="current-password"
             required
           />
-          {pwState.error && <p className="text-t-14 text-red-700">{pwState.error}</p>}
+          {pwState.error && <p role="alert" className="text-t-14 text-red-700">{pwState.error}</p>}
           <SubmitButton pending={pwPending}>Sign in</SubmitButton>
         </form>
       ) : (
         <form action={mlAction} className="space-y-6">
           <FormField label="Email" name="email" type="email" autoComplete="email" required />
-          {mlState.error && <p className="text-t-14 text-red-700">{mlState.error}</p>}
+          {mlState.error && <p role="alert" className="text-t-14 text-red-700">{mlState.error}</p>}
           {mlState.message && <p className="text-t-14 text-ink">{mlState.message}</p>}
           <SubmitButton pending={mlPending}>Send sign-in link</SubmitButton>
           <p className="text-t-12 text-ash">

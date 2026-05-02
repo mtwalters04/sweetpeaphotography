@@ -11,7 +11,7 @@ const MAX_BYTES = 10 * 1024 * 1024;
 
 /**
  * POST /api/uploads/presign
- * body: { filename, contentType, size, kind: 'request' | 'gallery', booking_id?, request_id? }
+ * body: { filename, contentType, size, kind: 'request' | 'gallery' | 'portfolio', booking_id?, request_id?, collection_id? }
  * Returns: { url, key }
  */
 export async function POST(request: NextRequest) {
@@ -37,9 +37,10 @@ export async function POST(request: NextRequest) {
     filename?: string;
     contentType?: string;
     size?: number;
-    kind?: 'request' | 'gallery';
+    kind?: 'request' | 'gallery' | 'portfolio';
     booking_id?: string;
     request_id?: string;
+    collection_id?: string;
   };
   try {
     body = await request.json();
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Gallery uploads must be staff and target a real booking.
-  if (kind === 'gallery') {
+  if (kind === 'gallery' || kind === 'portfolio') {
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
@@ -67,16 +68,31 @@ export async function POST(request: NextRequest) {
     if (profile?.role !== 'photographer' && profile?.role !== 'super_admin') {
       return NextResponse.json({ error: 'Forbidden.' }, { status: 403 });
     }
-    if (!body.booking_id) {
-      return NextResponse.json({ error: 'booking_id required.' }, { status: 400 });
+    if (kind === 'gallery') {
+      if (!body.booking_id) {
+        return NextResponse.json({ error: 'booking_id required.' }, { status: 400 });
+      }
+      const { data: booking } = await supabase
+        .from('bookings')
+        .select('id')
+        .eq('id', body.booking_id)
+        .single();
+      if (!booking) {
+        return NextResponse.json({ error: 'Unknown booking.' }, { status: 404 });
+      }
     }
-    const { data: booking } = await supabase
-      .from('bookings')
-      .select('id')
-      .eq('id', body.booking_id)
-      .single();
-    if (!booking) {
-      return NextResponse.json({ error: 'Unknown booking.' }, { status: 404 });
+    if (kind === 'portfolio') {
+      if (!body.collection_id) {
+        return NextResponse.json({ error: 'collection_id required.' }, { status: 400 });
+      }
+      const { data: collection } = await (supabase as any)
+        .from('portfolio_collections')
+        .select('id')
+        .eq('id', body.collection_id)
+        .single();
+      if (!collection) {
+        return NextResponse.json({ error: 'Unknown collection.' }, { status: 404 });
+      }
     }
   }
 
@@ -96,6 +112,8 @@ export async function POST(request: NextRequest) {
   const key =
     kind === 'gallery'
       ? `galleries/${body.booking_id ?? 'inbox'}/${Date.now()}-${safeName}`
+      : kind === 'portfolio'
+        ? `portfolio/${body.collection_id ?? 'inbox'}/${Date.now()}-${safeName}`
       : `uploads/${user.id}/${body.request_id ?? 'inbox'}/${Date.now()}-${safeName}`;
 
   try {

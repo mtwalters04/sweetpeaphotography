@@ -29,7 +29,7 @@ export function ProfileForm({
       <Field label="Full name" name="full_name" defaultValue={initialFullName} />
       <Field label="Phone" name="phone" type="tel" defaultValue={initialPhone} />
 
-      {state.error && <p className="text-t-14 text-red-700">{state.error}</p>}
+      {state.error && <p role="alert" className="text-t-14 text-red-700">{state.error}</p>}
       {state.saved && <p className="text-t-14 text-ink">Saved.</p>}
 
       <button

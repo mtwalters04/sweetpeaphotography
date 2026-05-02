@@ -16,14 +16,33 @@ export default async function AdminHome() {
     .from('blog_posts')
     .select('*', { count: 'exact', head: true })
     .eq('status', 'published');
+  const { count: portfolioCount } = await (supabase as any)
+    .from('portfolio_collections')
+    .select('*', { count: 'exact', head: true })
+    .eq('published', true);
 
   return (
     <>
       <p className="text-t-22 text-ash max-w-prose">
-        The booking pipeline lands in Phase 3. Until then, the Journal is fully usable.
+        Run daily operations from Workflow: publish open dates, triage requests, and advance each
+        booking through delivery.
       </p>
 
-      <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-10">
+      <div className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-10">
+        <Card
+          eyebrow="Calendar slots"
+          headline="Publish open dates"
+          subline="Create one session type per day, then open multiple time blocks."
+          href="/admin/slots"
+          cta="Open calendar slots →"
+        />
+        <Card
+          eyebrow="Custom requests"
+          headline="Review incoming requests"
+          subline="Quote, accept, or decline custom date requests from customers."
+          href="/admin/requests"
+          cta="Open requests →"
+        />
         <Card
           eyebrow="Journal"
           headline={`${publishedCount ?? 0} published`}
@@ -32,14 +51,11 @@ export default async function AdminHome() {
           cta="Open the Journal →"
         />
         <Card
-          eyebrow="Bookings"
-          headline="Coming soon"
-          subline="Slot publishing + Stripe checkout — Phase 3."
-        />
-        <Card
-          eyebrow="Custom requests"
-          headline="Coming soon"
-          subline="Triage inbox — Phase 4."
+          eyebrow="Portfolio"
+          headline={`${portfolioCount ?? 0} published`}
+          subline="Manage cover images and collection galleries."
+          href="/admin/portfolio"
+          cta="Open portfolio admin →"
         />
       </div>
     </>

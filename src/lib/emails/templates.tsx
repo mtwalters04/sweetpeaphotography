@@ -168,12 +168,14 @@ export function RequestReceivedEmail({
 export function AdminNewRequestEmail({
   customerName,
   customerEmail,
+  customerPhone,
   preferredDate,
   message,
   adminUrl,
 }: {
   customerName: string;
   customerEmail: string;
+  customerPhone: string | null;
   preferredDate: string | null;
   message: string;
   adminUrl: string;
@@ -185,6 +187,7 @@ export function AdminNewRequestEmail({
         {customerName} ({customerEmail})
         {preferredDate ? ` is asking about ${fmtFullDate(preferredDate)}.` : '.'}
       </p>
+      {customerPhone && <p style={styles.meta}>Phone: {customerPhone}</p>}
       <div style={styles.card}>
         <p style={{ ...styles.body, fontSize: '15px', whiteSpace: 'pre-wrap' }}>{message}</p>
       </div>

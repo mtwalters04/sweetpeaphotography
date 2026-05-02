@@ -67,7 +67,7 @@ export function CheckoutButton({
         <span>{pending ? 'Holding the date…' : 'Book — pay 30% deposit'}</span>
         <span aria-hidden>→</span>
       </button>
-      {error && <p className="text-t-14 text-red-700">{error}</p>}
+      {error && <p role="alert" className="text-t-14 text-red-700">{error}</p>}
     </div>
   );
 }

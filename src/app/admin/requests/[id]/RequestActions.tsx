@@ -101,7 +101,7 @@ function QuoteForm({
       <SimpleField label="Duration (minutes)" name="duration_minutes" type="number" defaultValue="60" />
       <SimpleField label="Quote total (USD)" name="amount_dollars" type="number" required />
       <SimpleField label="Message to customer (optional)" name="message" textarea />
-      {state.error && <p className="text-t-14 text-red-700">{state.error}</p>}
+      {state.error && <p role="alert" className="text-t-14 text-red-700">{state.error}</p>}
       {state.saved && <p className="text-t-14 text-ink">Quote sent.</p>}
       <button
         type="submit"
@@ -119,7 +119,7 @@ function DeclineForm({ action }: { action: (p: State, fd: FormData) => Promise<S
   return (
     <form action={formAction} className="space-y-6">
       <SimpleField label="Reason (shared with customer)" name="reason" textarea />
-      {state.error && <p className="text-t-14 text-red-700">{state.error}</p>}
+      {state.error && <p role="alert" className="text-t-14 text-red-700">{state.error}</p>}
       {state.saved && <p className="text-t-14 text-ink">Declined.</p>}
       <button
         type="submit"
@@ -137,7 +137,7 @@ function NoteForm({ action }: { action: (p: State, fd: FormData) => Promise<Stat
   return (
     <form action={formAction} className="space-y-6">
       <SimpleField label="Internal note (not shared with customer)" name="body" textarea required />
-      {state.error && <p className="text-t-14 text-red-700">{state.error}</p>}
+      {state.error && <p role="alert" className="text-t-14 text-red-700">{state.error}</p>}
       {state.saved && <p className="text-t-14 text-ink">Saved.</p>}
       <button
         type="submit"

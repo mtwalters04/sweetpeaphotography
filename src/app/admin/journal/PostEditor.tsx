@@ -117,7 +117,7 @@ export function PostEditor({ post, action, submitLabel }: Props) {
           </div>
         </details>
 
-        {state.error && <p className="text-t-14 text-red-700">{state.error}</p>}
+        {state.error && <p role="alert" className="text-t-14 text-red-700">{state.error}</p>}
         {state.saved && <p className="text-t-14 text-ink">Saved.</p>}
 
         <button

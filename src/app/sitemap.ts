@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { PORTFOLIO } from '@/lib/content/portfolio';
+import { getPortfolioCollections } from '@/lib/content/portfolio';
 import { SERVICES } from '@/lib/content/services';
 import { STUDIO } from '@/lib/content/studio';
 import { createClient } from '@/lib/supabase/server';
@@ -14,7 +14,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${STUDIO.url}/contact`, lastModified: now, priority: 0.6 },
     { url: `${STUDIO.url}/journal`, lastModified: now, priority: 0.7 },
   ];
-  const portfolio = PORTFOLIO.map((c) => ({
+  const portfolioCollections = await getPortfolioCollections();
+  const portfolio = portfolioCollections.map((c) => ({
     url: `${STUDIO.url}/portfolio/${c.slug}`,
     lastModified: now,
     priority: 0.7,

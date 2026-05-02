@@ -1,49 +1,55 @@
-import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { SlotForm } from '../SlotForm';
-import { createSlot } from '../actions';
+import { ensureSessionTypesSeeded } from '@/lib/session-types';
+import { DayAvailabilityForm } from '../DayAvailabilityForm';
+import { createDaySlots } from '../actions';
 
-export const metadata = { title: 'New slot · Admin' };
+export const metadata = { title: 'Publish day · Admin' };
 
 export default async function NewSlotPage() {
   const supabase = await createClient();
-  const [{ data: services }, { data: photographers }] = await Promise.all([
+  await ensureSessionTypesSeeded(supabase);
+  const [{ data: services }, { data: existingSlots }] = await Promise.all([
     supabase
       .from('session_types')
-      .select('id, name')
-      .eq('active', true)
+      .select('id, name, duration_minutes, active')
       .order('order_index'),
     supabase
-      .from('photographers')
-      .select('id, public_name')
-      .eq('active', true)
-      .order('order_index'),
+      .from('available_slots')
+      .select('starts_at, status, session_types(name)')
+      .gte('starts_at', new Date().toISOString())
+      .order('starts_at', { ascending: true }),
   ]);
 
-  if (!services || services.length === 0) {
-    redirect('/admin/services/new');
+  const dayMap = new Map<
+    string,
+    { date: string; sessionName: string; activeCount: number; cancelledCount: number }
+  >();
+  for (const slot of existingSlots ?? []) {
+    const day = new Date(slot.starts_at).toISOString().slice(0, 10);
+    if (!dayMap.has(day)) {
+      dayMap.set(day, {
+        date: day,
+        sessionName: slot.session_types?.name ?? 'Existing session',
+        activeCount: 0,
+        cancelledCount: 0,
+      });
+    }
+    if (slot.status === 'cancelled') {
+      dayMap.get(day)!.cancelledCount += 1;
+    } else {
+      dayMap.get(day)!.activeCount += 1;
+    }
   }
 
   return (
-    <SlotForm
-      action={createSlot}
-      submitLabel="Publish →"
-      slot={{
-        id: null,
-        session_type_id: '',
-        photographer_id: '',
-        starts_at_local: '',
-        duration_minutes: 0,
-        price_dollars: 0,
-        location_label: '',
-        notes: '',
-        status: 'open',
-        isPrivate: false,
-      }}
-      serviceOptions={services.map((s) => ({ value: s.id, label: s.name }))}
-      photographerOptions={
-        photographers?.map((p) => ({ value: p.id, label: p.public_name })) ?? []
-      }
+    <DayAvailabilityForm
+      action={createDaySlots}
+      serviceOptions={(services ?? []).map((s) => ({
+        value: s.id,
+        label: s.active ? s.name : `${s.name} (inactive)`,
+        durationMinutes: s.duration_minutes,
+      }))}
+      existingDays={Array.from(dayMap.values())}
     />
   );
 }

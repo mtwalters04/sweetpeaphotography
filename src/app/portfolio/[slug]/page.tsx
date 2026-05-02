@@ -2,13 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { PORTFOLIO, getCollection } from '@/lib/content/portfolio';
-import { placeholderSrc } from '@/lib/placeholder';
+import { getPortfolioCollection } from '@/lib/content/portfolio';
 import { CtaLink } from '@/components/cta-link';
-
-export function generateStaticParams() {
-  return PORTFOLIO.map((c) => ({ slug: c.slug }));
-}
 
 export async function generateMetadata({
   params,
@@ -16,7 +11,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const collection = getCollection(slug);
+  const collection = await getPortfolioCollection(slug);
   if (!collection) return {};
   return {
     title: collection.title,
@@ -36,45 +31,26 @@ export default async function CollectionPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const collection = getCollection(slug);
+  const collection = await getPortfolioCollection(slug);
   if (!collection) notFound();
 
   return (
     <>
-      <header className="pt-[clamp(160px,22vw,288px)] pb-[clamp(56px,8vw,112px)]">
-        <div className="max-w-content mx-auto px-6">
-          <Link
-            href="/portfolio"
-            className="text-ash text-t-12 uppercase tracking-[0.22em] hover:text-accent transition-colors duration-500"
-          >
-            ← All collections
-          </Link>
-          <p className="text-ash text-t-12 uppercase tracking-[0.22em] mt-16 mb-6">
-            {collection.eyebrow}
-          </p>
-          <h1 className="font-serif text-[clamp(2.75rem,7vw,5.5rem)] leading-[0.98] tracking-[-0.02em]">
-            {collection.title.split(' ').map((word, i, arr) =>
-              i === arr.length - 1 ? (
-                <span key={i} className="italic font-light">
-                  {word}
-                </span>
-              ) : (
-                <span key={i}>{word} </span>
-              ),
-            )}
-          </h1>
-          <p className="text-t-22 text-ash mt-10 max-w-prose font-light leading-relaxed">
-            {collection.summary}
-          </p>
-        </div>
-      </header>
-
       {/* Cover */}
-      <section className="pb-[clamp(56px,8vw,112px)]">
+      <section className="pt-[clamp(112px,12vw,156px)] pb-[clamp(56px,8vw,112px)]">
         <div className="max-w-content mx-auto px-6">
+          <div className="mb-8 md:mb-10 flex flex-wrap items-center justify-between gap-4">
+            <Link
+              href="/portfolio"
+              className="text-ash text-t-12 uppercase tracking-[0.22em] hover:text-accent transition-colors duration-500"
+            >
+              ← All collections
+            </Link>
+            <p className="text-ash text-t-12 uppercase tracking-[0.22em]">{collection.eyebrow}</p>
+          </div>
           <div className={`relative ${aspectClass(collection.cover.orientation)} bg-mist`}>
             <Image
-              src={placeholderSrc(collection.cover.seed, 2200, 1500)}
+              src={collection.cover.src}
               alt={collection.cover.alt}
               fill
               priority
@@ -98,10 +74,10 @@ export default async function CollectionPage({
             const offset =
               idx % 4 === 1 ? 'md:col-start-6 md:mt-16' : idx % 4 === 3 ? 'md:col-start-4 md:mt-12' : '';
             return (
-              <figure key={image.seed} className={`${span} ${offset}`}>
+              <figure key={image.id} className={`${span} ${offset}`}>
                 <div className={`relative ${aspectClass(image.orientation)} bg-mist`}>
                   <Image
-                    src={placeholderSrc(image.seed, 1400, 1750)}
+                    src={image.src}
                     alt={image.alt}
                     fill
                     sizes="(min-width: 768px) 50vw, 100vw"

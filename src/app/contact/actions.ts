@@ -46,6 +46,23 @@ export async function submitCustomRequest(
 
   const message = String(fd.get('message') ?? '').trim();
   if (!message) return { error: 'Tell us a little about the day.', ok: false, needsAccount: false };
+  const contactName = String(fd.get('contact_name') ?? '').trim();
+  const contactEmail = String(fd.get('contact_email') ?? '').trim().toLowerCase();
+  const contactPhone = String(fd.get('contact_phone') ?? '').trim();
+
+  if (!contactName) {
+    return { error: 'Please include your full name.', ok: false, needsAccount: false };
+  }
+  if (!contactEmail && !contactPhone) {
+    return {
+      error: 'Please include at least one contact method: email or phone.',
+      ok: false,
+      needsAccount: false,
+    };
+  }
+  if (contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
+    return { error: 'Please include a valid email address.', ok: false, needsAccount: false };
+  }
 
   const preferred_date = String(fd.get('date') ?? '') || null;
   const preferred_time = String(fd.get('time') ?? '') || null;
@@ -76,30 +93,41 @@ export async function submitCustomRequest(
 
   // Notify both sides. Admin client for the email_log writes (RLS).
   const admin = createAdminClient();
+  // Keep profile details in sync for CRM and follow-up.
+  await admin
+    .from('profiles')
+    .update({
+      full_name: contactName,
+      ...(contactPhone ? { phone: contactPhone } : {}),
+    })
+    .eq('id', user.id);
+
   const { data: profile } = await admin
     .from('profiles')
     .select('full_name, email')
     .eq('id', user.id)
     .single();
-  const customerName = profile?.full_name ?? profile?.email ?? 'there';
-  const customerEmail = profile?.email ?? '';
+  const customerName = contactName || profile?.full_name || profile?.email || 'there';
+  const customerEmail = contactEmail || profile?.email || '';
 
-  const r1 = await sendEmail({
-    to: customerEmail,
-    subject: 'We received your request.',
-    react: RequestReceivedEmail({
-      customerName,
-      manageUrl: `${env.siteUrl()}/account/requests/${req.id}`,
-    }),
-  });
-  await admin.from('email_log').insert({
-    request_id: req.id,
-    to_email: customerEmail,
-    subject: 'We received your request.',
-    template: 'request_received',
-    resend_id: r1.id ?? null,
-    error: r1.error ?? null,
-  });
+  if (customerEmail) {
+    const r1 = await sendEmail({
+      to: customerEmail,
+      subject: 'We received your request.',
+      react: RequestReceivedEmail({
+        customerName,
+        manageUrl: `${env.siteUrl()}/account/requests/${req.id}`,
+      }),
+    });
+    await admin.from('email_log').insert({
+      request_id: req.id,
+      to_email: customerEmail,
+      subject: 'We received your request.',
+      template: 'request_received',
+      resend_id: r1.id ?? null,
+      error: r1.error ?? null,
+    });
+  }
 
   const r2 = await sendEmail({
     to: env.studioNotificationEmail(),
@@ -107,6 +135,7 @@ export async function submitCustomRequest(
     react: AdminNewRequestEmail({
       customerName,
       customerEmail,
+      customerPhone: contactPhone,
       preferredDate: preferred_date,
       message,
       adminUrl: `${env.siteUrl()}/admin/requests/${req.id}`,

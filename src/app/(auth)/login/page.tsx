@@ -31,7 +31,7 @@ export default async function LoginPage({
       }
     >
       {sp.error === 'auth_callback_failed' && (
-        <p className="text-t-14 text-red-700 mb-6">
+        <p role="alert" className="text-t-14 text-red-700 mb-6">
           That sign-in link has expired or was already used. Try again.
         </p>
       )}

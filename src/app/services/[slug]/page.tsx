@@ -35,31 +35,18 @@ export default async function ServicePage({
 
   return (
     <>
-      <header className="pt-[clamp(160px,22vw,288px)] pb-[clamp(56px,8vw,112px)]">
-        <div className="max-w-content mx-auto px-6 grid grid-cols-12 gap-6">
-          <div className="col-span-12 md:col-span-8">
+      {/* Hero image */}
+      <section className="pt-[clamp(112px,12vw,156px)] pb-[clamp(72px,10vw,144px)]">
+        <div className="max-w-content mx-auto px-6">
+          <div className="mb-8 md:mb-10 flex flex-wrap items-center justify-between gap-4">
             <Link
               href="/services"
               className="text-ash text-t-12 uppercase tracking-[0.22em] hover:text-accent transition-colors duration-500"
             >
               ← All services
             </Link>
-            <p className="text-ash text-t-12 uppercase tracking-[0.22em] mt-16 mb-6">
-              {service.eyebrow}
-            </p>
-            <h1 className="font-serif text-[clamp(2.75rem,7vw,5.5rem)] leading-[0.98] tracking-[-0.02em]">
-              {service.name}
-            </h1>
-            <p className="text-t-22 text-ash mt-10 max-w-prose font-light leading-relaxed">
-              {service.summary}
-            </p>
+            <p className="text-ash text-t-12 uppercase tracking-[0.22em]">{service.eyebrow}</p>
           </div>
-        </div>
-      </header>
-
-      {/* Hero image */}
-      <section className="pb-[clamp(72px,10vw,144px)]">
-        <div className="max-w-content mx-auto px-6">
           <div className="relative aspect-[3/2] bg-mist">
             <Image
               src={placeholderSrc(`service-${service.slug}`, 2200, 1500)}

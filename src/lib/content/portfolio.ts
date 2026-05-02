@@ -1,11 +1,15 @@
-// Static portfolio collections for Phase 1. Real photos replace these later.
+import { createClient } from '@/lib/supabase/server';
+import { publicUrl } from '@/lib/r2';
+
 export type PortfolioImage = {
-  seed: string;
+  id: string;
+  src: string;
   alt: string;
   orientation: 'portrait' | 'landscape' | 'square';
 };
 
 export type PortfolioCollection = {
+  id: string;
   slug: string;
   title: string;
   eyebrow: string;
@@ -14,83 +18,86 @@ export type PortfolioCollection = {
   images: readonly PortfolioImage[];
 };
 
-const collection = (
-  slug: string,
-  title: string,
-  eyebrow: string,
-  summary: string,
-  cover: PortfolioImage,
-  images: readonly PortfolioImage[],
-): PortfolioCollection => ({ slug, title, eyebrow, summary, cover, images });
+type CollectionRow = {
+  id: string;
+  slug: string;
+  title: string;
+  eyebrow: string | null;
+  summary: string | null;
+  cover_image_key: string | null;
+  cover_image_alt: string | null;
+};
 
-export const PORTFOLIO: readonly PortfolioCollection[] = [
-  collection(
-    'rowan-and-iris',
-    'Rowan & Iris',
-    'Wedding · Late summer',
-    'A small ceremony at her grandmother’s home. The light through the kitchen window did most of the work.',
-    { seed: 'rowan-iris-cover', alt: 'Bride and groom in a doorway', orientation: 'portrait' },
-    [
-      { seed: 'rowan-iris-01', alt: 'Bride alone before the ceremony', orientation: 'portrait' },
-      { seed: 'rowan-iris-02', alt: 'Reception table at dusk', orientation: 'landscape' },
-      { seed: 'rowan-iris-03', alt: 'Hands clasped during vows', orientation: 'square' },
-      { seed: 'rowan-iris-04', alt: 'Couple walking through a field', orientation: 'landscape' },
-      { seed: 'rowan-iris-05', alt: 'Grandmother adjusting the veil', orientation: 'portrait' },
-      { seed: 'rowan-iris-06', alt: 'First dance under string lights', orientation: 'landscape' },
-    ],
-  ),
-  collection(
-    'the-marrows',
-    'The Marrows',
-    'Family · Annual portrait',
-    'A return visit. Two more children since the last set, the same garden.',
-    { seed: 'marrows-cover', alt: 'Family in a garden at dusk', orientation: 'landscape' },
-    [
-      { seed: 'marrows-01', alt: 'Two siblings on a porch swing', orientation: 'square' },
-      { seed: 'marrows-02', alt: 'Mother and youngest child', orientation: 'portrait' },
-      { seed: 'marrows-03', alt: 'Family walking away from camera', orientation: 'landscape' },
-      { seed: 'marrows-04', alt: 'Father lifting toddler', orientation: 'portrait' },
-    ],
-  ),
-  collection(
-    'wren-portrait',
-    'Wren, at twenty-two',
-    'Portrait · Studio and street',
-    'A graduation portrait that turned into something else by the end of the hour.',
-    { seed: 'wren-cover', alt: 'Wren in soft window light', orientation: 'portrait' },
-    [
-      { seed: 'wren-01', alt: 'Close portrait, eyes lowered', orientation: 'portrait' },
-      { seed: 'wren-02', alt: 'Walking shot in the city', orientation: 'landscape' },
-      { seed: 'wren-03', alt: 'Profile against a stone wall', orientation: 'portrait' },
-      { seed: 'wren-04', alt: 'Hands holding a book', orientation: 'square' },
-    ],
-  ),
-  collection(
-    'birch-and-vale',
-    'Birch & Vale',
-    'Engagement · River walk',
-    'An afternoon at the river. Cold feet, warm hands.',
-    { seed: 'birch-cover', alt: 'Couple wading at sunset', orientation: 'landscape' },
-    [
-      { seed: 'birch-01', alt: 'Couple seated on a stone', orientation: 'square' },
-      { seed: 'birch-02', alt: 'Walking the path back', orientation: 'landscape' },
-      { seed: 'birch-03', alt: 'Quiet portrait, half-light', orientation: 'portrait' },
-    ],
-  ),
-  collection(
-    'autumn-minis',
-    'Autumn mini sessions',
-    'Mini · October release',
-    'A long Saturday in the orchard. Twelve families, one tree, one slow afternoon.',
-    { seed: 'autumn-cover', alt: 'Family under an apple tree', orientation: 'landscape' },
-    [
-      { seed: 'autumn-01', alt: 'Toddler with apple', orientation: 'square' },
-      { seed: 'autumn-02', alt: 'Couple in matching wool', orientation: 'portrait' },
-      { seed: 'autumn-03', alt: 'Siblings backlit', orientation: 'landscape' },
-    ],
-  ),
-];
+type ItemRow = {
+  id: string;
+  collection_id: string;
+  r2_key: string;
+  alt: string | null;
+  orientation: 'portrait' | 'landscape' | 'square';
+};
 
-export function getCollection(slug: string): PortfolioCollection | undefined {
-  return PORTFOLIO.find((c) => c.slug === slug);
+function urlFromKey(key: string): string {
+  return publicUrl(key) ?? '/images/hero-home-estate.png';
+}
+
+function mapCollection(row: CollectionRow, images: readonly ItemRow[]): PortfolioCollection {
+  const mappedImages = images.map((image) => ({
+    id: image.id,
+    src: urlFromKey(image.r2_key),
+    alt: image.alt ?? row.title,
+    orientation: image.orientation,
+  }));
+  const coverFromItem = mappedImages[0] ?? null;
+  const cover = row.cover_image_key
+    ? {
+        id: `cover-${row.id}`,
+        src: urlFromKey(row.cover_image_key),
+        alt: row.cover_image_alt ?? row.title,
+        orientation: coverFromItem?.orientation ?? 'landscape',
+      }
+    : (coverFromItem ?? {
+        id: `cover-${row.id}`,
+        src: '/images/hero-home-estate.png',
+        alt: row.title,
+        orientation: 'landscape',
+      });
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    eyebrow: row.eyebrow ?? '',
+    summary: row.summary ?? '',
+    cover,
+    images: mappedImages,
+  };
+}
+
+export async function getPortfolioCollections(): Promise<PortfolioCollection[]> {
+  const supabase = await createClient();
+  const { data: collections } = await (supabase as any)
+    .from('portfolio_collections')
+    .select('id, slug, title, eyebrow, summary, cover_image_key, cover_image_alt')
+    .eq('published', true)
+    .order('order_index')
+    .order('created_at', { ascending: false });
+  if (!collections || collections.length === 0) return [];
+
+  const ids = collections.map((c: CollectionRow) => c.id);
+  const { data: items } = await (supabase as any)
+    .from('portfolio_items')
+    .select('id, collection_id, r2_key, alt, orientation')
+    .in('collection_id', ids)
+    .order('order_index')
+    .order('created_at');
+  const byCollection = new Map<string, ItemRow[]>();
+  for (const item of (items ?? []) as ItemRow[]) {
+    byCollection.set(item.collection_id, [...(byCollection.get(item.collection_id) ?? []), item]);
+  }
+
+  return (collections as CollectionRow[]).map((row) => mapCollection(row, byCollection.get(row.id) ?? []));
+}
+
+export async function getPortfolioCollection(slug: string): Promise<PortfolioCollection | null> {
+  const all = await getPortfolioCollections();
+  return all.find((collection) => collection.slug === slug) ?? null;
 }

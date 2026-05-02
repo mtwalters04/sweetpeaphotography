@@ -20,7 +20,7 @@ export function SignupForm() {
         autoComplete="new-password"
         required
       />
-      {state.error && <p className="text-t-14 text-red-700">{state.error}</p>}
+      {state.error && <p role="alert" className="text-t-14 text-red-700">{state.error}</p>}
       {state.message && <p className="text-t-14 text-ink">{state.message}</p>}
       <SubmitButton pending={pending}>Create account</SubmitButton>
       <p className="text-t-12 text-ash">

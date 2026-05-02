@@ -96,7 +96,7 @@ export default async function PostPage({
       />
 
       <article>
-        <header className="pt-[clamp(128px,18vw,224px)] pb-[clamp(48px,6vw,96px)]">
+        <header className="pt-[clamp(112px,12vw,156px)] pb-[clamp(24px,4vw,40px)]">
           <div className="max-w-content mx-auto px-6">
             <Link
               href="/journal"

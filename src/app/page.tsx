@@ -29,7 +29,7 @@ export default async function Home() {
         />
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-ink/20 via-ink/5 to-ink/65 md:hidden"
+          className="absolute inset-0 bg-gradient-to-b from-ink/55 via-ink/25 to-ink/75 md:hidden"
         />
         <div
           aria-hidden
@@ -91,18 +91,18 @@ export default async function Home() {
                 <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <article className="border border-mist bg-bone p-5 md:p-6 min-h-[220px] flex flex-col">
                     <p className="text-t-12 text-ash/90 eyebrow-label mb-3">Fast route</p>
-                    <p className="font-serif text-[clamp(1.18rem,1.55vw,1.38rem)] leading-tight min-h-[2.2em]">
+                    <h3 className="font-serif font-normal text-[clamp(1.18rem,1.55vw,1.38rem)] leading-tight min-h-[2.2em]">
                       Book open dates
-                    </p>
+                    </h3>
                     <p className="text-t-16 text-ash/95 mt-4 leading-relaxed text-wrap-pretty">
                       Choose a published slot, place the deposit, and your date is confirmed.
                     </p>
                   </article>
                   <article className="border border-mist bg-bone p-5 md:p-6 min-h-[220px] flex flex-col">
                     <p className="text-t-12 text-ash/90 eyebrow-label mb-3">Need flexibility</p>
-                    <p className="font-serif text-[clamp(1.18rem,1.55vw,1.38rem)] leading-tight min-h-[2.2em] md:whitespace-nowrap">
+                    <h3 className="font-serif font-normal text-[clamp(1.18rem,1.55vw,1.38rem)] leading-tight min-h-[2.2em] md:whitespace-nowrap">
                       Custom date request
-                    </p>
+                    </h3>
                     <p className="text-t-16 text-ash/95 mt-4 leading-relaxed text-wrap-pretty">
                       Share your timing and session details, and we will send a tailored quote.
                     </p>

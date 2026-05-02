@@ -1,10 +1,7 @@
-import { createClient } from '@/lib/supabase/server';
 import { NavBar } from './nav-bar';
 
-export async function Nav() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return <NavBar signedIn={!!user} />;
+// NavBar reads auth client-side so this layout slot stays static and
+// public pages don't get forced into dynamic rendering.
+export function Nav() {
+  return <NavBar />;
 }

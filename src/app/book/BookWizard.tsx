@@ -128,11 +128,21 @@ export function BookWizard({
             const key = toDateInput(cell.date);
             const available = byDay.get(key)?.length ?? 0;
             const selected = selectedDay === key;
+            const dayLabel = cell.date.toLocaleDateString('en-US', {
+              weekday: 'long',
+              month: 'long',
+              day: 'numeric',
+            });
+            const ariaLabel = available
+              ? `${dayLabel}, ${available} time${available === 1 ? '' : 's'} available`
+              : `${dayLabel}, no times available`;
             return (
               <button
                 key={cell.key}
                 type="button"
                 disabled={!available}
+                aria-label={ariaLabel}
+                aria-pressed={selected}
                 onClick={() => {
                   setSelectedDay(key);
                   setSelectedSlotId(null);
